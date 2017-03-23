@@ -1,7 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
-import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { StatusBar } from '@ionic-native/status-bar';
+
+import { Api } from '../providers/api';
 
 import { Page1 } from '../pages/page1/page1';
 import { Page2 } from '../pages/page2/page2';
@@ -17,7 +19,10 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform,
+              public splashScreen: SplashScreen,
+              public statusBar: StatusBar,
+              public api: Api ) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -34,6 +39,12 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+    });
+  }
+
+  ngOnInit() {
+    this.api.connect().subscribe(data => {
+      console.log(data);
     });
   }
 
