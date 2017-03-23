@@ -23,6 +23,7 @@ export class MyApp {
               public splashScreen: SplashScreen,
               public statusBar: StatusBar,
               public api: Api ) {
+
     this.initializeApp();
 
     // used for an example of ngFor and navigation
