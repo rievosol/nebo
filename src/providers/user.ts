@@ -15,6 +15,7 @@ export class User {
   user: any;
   isAuthenticated: boolean = false;
   loginUrl: string = this.api.serviceUrl + '/user/login';
+  logoutUrl: string = this.api.serviceUrl + '/user/logout';
   
   constructor(public http: Http,
               public api: Api,
@@ -70,5 +71,29 @@ export class User {
     else {
       this.enableAnonymousMenu();
     }
+  }
+
+  logout() {
+    return this.api.getToken()
+      .flatMap(token => {
+        return this.userLogout(token);
+      })
+      .flatMap(() => {
+        return this.api.connect();
+      })
+      .flatMap(data => {
+        this.bootstrap();
+        return Observable.of(data.user);
+      });
+  }
+
+  private userLogout(token: string) {
+    let headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': token
+    });
+    let options = new RequestOptions({ headers: headers });
+    console.log('logging out');
+    return this.http.post(this.logoutUrl, null, options);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, ToastController } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
@@ -11,6 +11,7 @@ import { SystemConnectPage } from '../pages/system-connect/system-connect';
 import { MyAccountPage } from '../pages/my-account/my-account';
 import { MyContentPage } from '../pages/my-content/my-content';
 import { MyFavoritesPage } from '../pages/my-favorites/my-favorites';
+import { HighlightsPage } from '../pages/highlights/highlights';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class MyApp {
               public splashScreen: SplashScreen,
               public statusBar: StatusBar,
               public api: Api,
-              public user: User) {
+              public user: User,
+              public toastCtrl: ToastController ) {
 
     this.initializeApp();
 
@@ -58,6 +60,19 @@ export class MyApp {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
     this.nav.push(page.component);
+  }
+
+  logout() {
+    this.user.logout().subscribe(user => {
+      console.log(user);
+      this.nav.setRoot(HighlightsPage);
+      let toast = this.toastCtrl.create({
+        message: 'Successfully logged out',
+        duration: 3000,
+        position: 'top'
+      });
+      toast.present();
+    });
   }
 
 }
