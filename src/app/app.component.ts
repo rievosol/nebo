@@ -22,8 +22,8 @@ export class MyApp {
 
   rootPage: any = SystemConnectPage;
 
-  authPages: Array<{title: string, component: any}>;
-  anonPages: Array<{title: string, component: any}>;
+  authPages: Array<{title: string, component: any, icon: string}>;
+  anonPages: Array<{title: string, component: any, icon: string}>;
 
   constructor(public platform: Platform,
               public splashScreen: SplashScreen,
@@ -36,13 +36,13 @@ export class MyApp {
 
     // used for an example of ngFor and navigation
     this.authPages = [
-      { title: 'My Account', component: MyAccountPage },
-      { title: 'My Content', component: MyContentPage },
-      { title: 'My Favorites', component: MyFavoritesPage }
+      { title: 'My Account', component: MyAccountPage, icon: 'person' },
+      { title: 'My Content', component: MyContentPage, icon: 'folder' },
+      { title: 'My Favorites', component: MyFavoritesPage, icon: 'heart' }
     ];
 
     this.anonPages = [
-      { title: 'Login', component: LoginPage }
+      { title: 'Login', component: LoginPage, icon: 'exit' }
     ];
 
   }
