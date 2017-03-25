@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
+
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/observable/of';
 
 /**
  * Api is a service to facilitate REST and server connection.
@@ -14,13 +16,20 @@ export class Api {
   tokenUrl: string = this.url + '/services/session/token';
   systemConnectUrl: string = this.serviceUrl + '/system/connect';
 
+  systemData: any;
+
   constructor(public http: Http) {
     
   }
 
-  private getToken() {
+  public getToken() {
+    console.log('getting token');
     return this.http.get(this.tokenUrl)
-      .map(res => res.text());
+      .map(res => {
+        let token = res.text();
+        console.log(token);
+        return token;
+      });
   }
 
   private systemConnect(token) {
@@ -29,13 +38,19 @@ export class Api {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-
+    console.log('system connecting');
     return this.http.post(this.systemConnectUrl, null, options)
-      .map(res => res.json());
+      .map(res => {
+        let data = res.json();
+        this.systemData = data;
+        return data;
+      });
   }
 
   public connect() {
     return this.getToken()
-      .flatMap(token => this.systemConnect(token));
+      .flatMap(token => {
+        return this.systemConnect(token);
+      })
   }
 }

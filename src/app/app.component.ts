@@ -4,9 +4,13 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 import { Api } from '../providers/api';
+import { User } from '../providers/user';
 
-import { Page1 } from '../pages/page1/page1';
-import { Page2 } from '../pages/page2/page2';
+import { LoginPage } from '../pages/login/login';
+import { SystemConnectPage } from '../pages/system-connect/system-connect';
+import { MyAccountPage } from '../pages/my-account/my-account';
+import { MyContentPage } from '../pages/my-content/my-content';
+import { MyFavoritesPage } from '../pages/my-favorites/my-favorites';
 
 
 @Component({
@@ -15,21 +19,28 @@ import { Page2 } from '../pages/page2/page2';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = Page1;
+  rootPage: any = SystemConnectPage;
 
-  pages: Array<{title: string, component: any}>;
+  authPages: Array<{title: string, component: any}>;
+  anonPages: Array<{title: string, component: any}>;
 
   constructor(public platform: Platform,
               public splashScreen: SplashScreen,
               public statusBar: StatusBar,
-              public api: Api ) {
+              public api: Api,
+              public user: User) {
 
     this.initializeApp();
 
     // used for an example of ngFor and navigation
-    this.pages = [
-      { title: 'Page One', component: Page1 },
-      { title: 'Page Two', component: Page2 }
+    this.authPages = [
+      { title: 'My Account', component: MyAccountPage },
+      { title: 'My Content', component: MyContentPage },
+      { title: 'My Favorites', component: MyFavoritesPage }
+    ];
+
+    this.anonPages = [
+      { title: 'Login', component: LoginPage }
     ];
 
   }
@@ -43,15 +54,10 @@ export class MyApp {
     });
   }
 
-  ngOnInit() {
-    this.api.connect().subscribe(data => {
-      console.log(data);
-    });
-  }
-
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
+    this.nav.push(page.component);
   }
+
 }
