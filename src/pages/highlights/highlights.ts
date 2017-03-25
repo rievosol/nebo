@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
+
+import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 
 /*
   Generated class for the Highlights page.
@@ -13,6 +15,31 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class HighlightsPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams,
+              public actionSheetCtrl: ActionSheetController) {}
+
+  addContent() {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Create content',
+      buttons: [
+        {
+          text: 'Business',
+          handler: () => {
+            console.log('create business');
+            this.navCtrl.push(BusinessEditFormPage);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
+  }
 
 }

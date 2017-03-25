@@ -23,7 +23,6 @@ export class Api {
   }
 
   public getToken() {
-    console.log('getting token');
     return this.http.get(this.tokenUrl)
       .map(res => {
         let token = res.text();
@@ -38,7 +37,6 @@ export class Api {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-    console.log('system connecting');
     return this.http.post(this.systemConnectUrl, null, options)
       .map(res => {
         let data = res.json();
@@ -51,6 +49,6 @@ export class Api {
     return this.getToken()
       .flatMap(token => {
         return this.systemConnect(token);
-      })
+      });
   }
 }
