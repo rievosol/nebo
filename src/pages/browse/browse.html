@@ -7,12 +7,21 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>browse</ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Nebo</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-
+  <ion-fab bottom right>
+    <button ion-fab color="primary" (click)="addContent()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+  <button ion-button round clear [navPush]="gotoBusiness">Business</button>
+  <button ion-button round clear [navPush]="gotoOrganization">Organization</button>
 </ion-content>

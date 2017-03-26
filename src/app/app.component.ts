@@ -11,7 +11,7 @@ import { SystemConnectPage } from '../pages/system-connect/system-connect';
 import { MyAccountPage } from '../pages/my-account/my-account';
 import { MyContentPage } from '../pages/my-content/my-content';
 import { MyFavoritesPage } from '../pages/my-favorites/my-favorites';
-import { HighlightsPage } from '../pages/highlights/highlights';
+import { TabsPage } from '../pages/tabs/tabs';
 
 
 @Component({
@@ -65,7 +65,7 @@ export class MyApp {
   logout() {
     this.user.logout().subscribe(user => {
       console.log(user);
-      this.nav.setRoot(HighlightsPage);
+      this.nav.setRoot(TabsPage);
       let toast = this.toastCtrl.create({
         message: 'Successfully logged out',
         duration: 3000,

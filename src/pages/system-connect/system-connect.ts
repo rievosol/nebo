@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { Api } from '../../providers/api';
 import { User } from '../../providers/user';
 
@@ -20,13 +20,22 @@ export class SystemConnectPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public api: Api,
-              public user: User) {}
+              public user: User,
+              public alertCtrl: AlertController) {}
 
   ionViewDidLoad() {
     this.api.connect().subscribe(data => {
       console.log(data);
       this.user.bootstrap();
       this.navCtrl.setRoot(TabsPage);
+    },
+    err => {
+      let alert = this.alertCtrl.create({
+        title: 'Connection failed',
+        message: 'Are you sure you are connected to the Internet?',
+        buttons: ['OK']
+      });
+      alert.present();
     });
   }
 

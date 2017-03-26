@@ -7,12 +7,17 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>browseBusiness</ion-title>
+    <ion-title>Businesses</ion-title>
   </ion-navbar>
 
 </ion-header>
 
-
-<ion-content padding>
-
+<ion-content>
+  <ion-list>
+    <button ion-item *ngFor="let item of items" (click)="itemSelected(item)">
+      <h2>{{ item.title }}</h2>
+      <h3>{{ item.category }}</h3>
+      <p>{{ item.desc }}</p>
+    </button>
+  </ion-list>
 </ion-content>

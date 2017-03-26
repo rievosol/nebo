@@ -3,7 +3,7 @@ import { NavController, ToastController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
 import { User } from '../../providers/user';
-import { HighlightsPage } from '../highlights/highlights';
+import { TabsPage } from '../tabs/tabs';
 
 /*
   Generated class for the Login page.
@@ -37,7 +37,7 @@ export class LoginPage {
     };
     this.user.login(account).subscribe(user => {
       console.log(user);
-      this.navCtrl.setRoot(HighlightsPage);
+      this.navCtrl.setRoot(TabsPage);
       let toast = this.toastCtrl.create({
         message: 'Welcome back, ' + user.name,
         duration: 3000,

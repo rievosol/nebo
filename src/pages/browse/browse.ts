@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
+import { BrowseBusinessPage } from '../browse-business/browse-business';
+import { BrowseOrganizationPage } from '../browse-organization/browse-organization';
+import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 
 /*
   Generated class for the Browse page.
@@ -13,10 +16,37 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class BrowsePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+  gotoBusiness: any;
+  gotoOrganization: any;
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad BrowsePage');
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams,
+              public actionSheetCtrl: ActionSheetController) {
+    this.gotoBusiness = BrowseBusinessPage;
+    this.gotoOrganization = BrowseOrganizationPage;
+  }
+
+  addContent() {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Create content',
+      buttons: [
+        {
+          text: 'Business',
+          handler: () => {
+            console.log('create business');
+            this.navCtrl.push(BusinessEditFormPage);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
   }
 
 }

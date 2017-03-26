@@ -18,6 +18,7 @@ import { OrganizationEditFormPage } from '../pages/organization-edit-form/organi
 import { PromotionEditFormPage } from '../pages/promotion-edit-form/promotion-edit-form';
 import { BrowseBusinessPage } from '../pages/browse-business/browse-business';
 import { BrowseOrganizationPage } from '../pages/browse-organization/browse-organization';
+import { BusinessDetailPage } from '../pages/business-detail/business-detail';
 
 import { Api } from '../providers/api';
 import { User } from '../providers/user';
@@ -43,7 +44,8 @@ let pages = [
   OrganizationEditFormPage,
   PromotionEditFormPage,
   BrowseBusinessPage,
-  BrowseOrganizationPage
+  BrowseOrganizationPage,
+  BusinessDetailPage
 ];
 
 export function declarations() {
