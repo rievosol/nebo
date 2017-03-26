@@ -3,7 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import { Api } from '../../providers/api';
 import { User } from '../../providers/user';
 
-import { HighlightsPage } from '../highlights/highlights';
+import { TabsPage } from '../tabs/tabs';
 
 /*
   Generated class for the SystemConnect page.
@@ -26,7 +26,7 @@ export class SystemConnectPage {
     this.api.connect().subscribe(data => {
       console.log(data);
       this.user.bootstrap();
-      this.navCtrl.setRoot(HighlightsPage);
+      this.navCtrl.setRoot(TabsPage);
     });
   }
 

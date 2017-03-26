@@ -3,9 +3,11 @@ import { RequestOptions } from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
+import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
 import { SystemConnectPage } from '../pages/system-connect/system-connect';
 import { HighlightsPage } from '../pages/highlights/highlights';
+import { BrowsePage } from '../pages/browse/browse';
 import { MyAccountPage } from '../pages/my-account/my-account';
 import { MyContentPage } from '../pages/my-content/my-content';
 import { MyFavoritesPage } from '../pages/my-favorites/my-favorites';
@@ -14,6 +16,8 @@ import { BusinessEditFormPage } from '../pages/business-edit-form/business-edit-
 import { EventEditFormPage } from '../pages/event-edit-form/event-edit-form';
 import { OrganizationEditFormPage } from '../pages/organization-edit-form/organization-edit-form';
 import { PromotionEditFormPage } from '../pages/promotion-edit-form/promotion-edit-form';
+import { BrowseBusinessPage } from '../pages/browse-business/browse-business';
+import { BrowseOrganizationPage } from '../pages/browse-organization/browse-organization';
 
 import { Api } from '../providers/api';
 import { User } from '../providers/user';
@@ -25,9 +29,11 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 let pages = [
   MyApp,
+  TabsPage,
   LoginPage,
   SystemConnectPage,
   HighlightsPage,
+  BrowsePage,
   MyAccountPage,
   MyContentPage,
   MyFavoritesPage,
@@ -35,7 +41,9 @@ let pages = [
   BusinessEditFormPage,
   EventEditFormPage,
   OrganizationEditFormPage,
-  PromotionEditFormPage
+  PromotionEditFormPage,
+  BrowseBusinessPage,
+  BrowseOrganizationPage
 ];
 
 export function declarations() {
