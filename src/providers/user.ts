@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { MenuController } from 'ionic-angular';
+import { MenuController, ToastController } from 'ionic-angular';
 
 import { Api } from './api';
 
@@ -14,16 +14,19 @@ export class User {
   
   user: any;
   isAuthenticated: boolean = false;
+  nodePermissions: any;
   loginUrl: string = this.api.serviceUrl + '/user/login';
   logoutUrl: string = this.api.serviceUrl + '/user/logout';
   
   constructor(public http: Http,
               public api: Api,
-              public menuCtrl: MenuController) {
+              public menuCtrl: MenuController,
+              public toastCtrl: ToastController) {
   }
 
   bootstrap() {
     this.user = this.api.systemData.user;
+    this.nodePermissions = this.api.systemData.content_types_user_permissions;
     this.isAuthenticated = this.isUserAuthenticated();
     this.updateMenu();
   }
@@ -38,6 +41,12 @@ export class User {
       })
       .flatMap(data => {
         this.bootstrap();
+        let toast = this.toastCtrl.create({
+          message: 'Welcome back, ' + data.user.name,
+          duration: 3000,
+          position: 'bottom'
+        });
+        toast.present();
         return Observable.of(data.user);
       });
   }
@@ -48,7 +57,6 @@ export class User {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-    console.log('logging in');
     return this.http.post(this.loginUrl, account, options);
   }
 
@@ -83,6 +91,12 @@ export class User {
       })
       .flatMap(data => {
         this.bootstrap();
+        let toast = this.toastCtrl.create({
+          message: 'Logout successful',
+          duration: 3000,
+          position: 'bottom'
+        });
+        toast.present();
         return Observable.of(data.user);
       });
   }
@@ -93,7 +107,6 @@ export class User {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-    console.log('logging out');
     return this.http.post(this.logoutUrl, null, options);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, ToastController } from 'ionic-angular';
+import { Nav, Platform } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
@@ -29,8 +29,7 @@ export class MyApp {
               public splashScreen: SplashScreen,
               public statusBar: StatusBar,
               public api: Api,
-              public user: User,
-              public toastCtrl: ToastController ) {
+              public user: User) {
 
     this.initializeApp();
 
@@ -64,14 +63,7 @@ export class MyApp {
 
   logout() {
     this.user.logout().subscribe(user => {
-      console.log(user);
       this.nav.setRoot(TabsPage);
-      let toast = this.toastCtrl.create({
-        message: 'Successfully logged out',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
     });
   }
 

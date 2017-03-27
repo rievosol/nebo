@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, ToastController } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
 import { User } from '../../providers/user';
@@ -19,8 +19,7 @@ export class LoginPage {
 
   private login: FormGroup;
 
-  constructor(public navCtrl: NavController, 
-              public toastCtrl: ToastController,
+  constructor(public navCtrl: NavController,
               public fb: FormBuilder,
               public user: User) {
     this.login = this.fb.group({
@@ -36,14 +35,7 @@ export class LoginPage {
       password: input.password
     };
     this.user.login(account).subscribe(user => {
-      console.log(user);
       this.navCtrl.setRoot(TabsPage);
-      let toast = this.toastCtrl.create({
-        message: 'Welcome back, ' + user.name,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
     })
   }
 
