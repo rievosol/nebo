@@ -71,7 +71,11 @@ export function providers() {
 @NgModule({
   declarations: declarations(),
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp, {
+      tabsHideOnSubPages: true,
+      tabsPlacement: 'top',
+      tabsHighlight: true
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: entryComponents(),
