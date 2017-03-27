@@ -4,6 +4,7 @@ import { ActionSheetController, ToastController, LoadingController } from 'ionic
 import { Observable } from 'rxjs/Observable';
 
 import { Api } from './api';
+import { User } from './user';
 //import { BusinessEditFormPage } from '../pages/business-edit-form/business-edit-form';
 
 import 'rxjs/add/operator/map';
@@ -23,6 +24,7 @@ export class NodeService {
 
   constructor(public http: Http,
               public api: Api,
+              public user: User,
               public actionSheetCtrl: ActionSheetController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController) {
@@ -82,6 +84,19 @@ export class NodeService {
         toast.present();
         return Observable.of(data);
       });
+  }
+
+  checkPermissionEdit(node) {
+    let perm = this.user.nodePermissions[node.type];
+    if (perm['edit any']) {
+      return true;
+    }
+    else if (perm['edit own'] && (node.uid == this.user.user.uid)) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
 }

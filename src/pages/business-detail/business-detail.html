@@ -9,7 +9,7 @@
   <ion-navbar>
     <ion-title>{{ title }}</ion-title>
     <ion-buttons end>
-      <button ion-button icon-left (click)="editNode()">
+      <button ion-button icon-left (click)="editNode()" *ngIf="canEdit">
         <ion-icon name="create"></ion-icon>Edit
       </button>
     </ion-buttons>

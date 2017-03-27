@@ -19,6 +19,7 @@ export class BusinessDetailPage {
 
   title: string;
   body: string;
+  canEdit: boolean = false;
   private _nid: string;
 
   constructor(public navCtrl: NavController, 
@@ -39,11 +40,16 @@ export class BusinessDetailPage {
       loading.dismiss();
       this.title = node.title;
       this.body = node.body.und ? node.body.und[0].value : '';
+      this.canEdit = this.nodeService.checkPermissionEdit(node);
     });
   }
 
   editNode() {
     this.navCtrl.push(BusinessEditFormPage, {nid: this._nid});
+  }
+
+  private checkPermissionEdit(node) {
+    console.log(node);
   }
 
 }

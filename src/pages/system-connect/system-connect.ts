@@ -25,7 +25,6 @@ export class SystemConnectPage {
 
   ionViewDidLoad() {
     this.api.connect().subscribe(data => {
-      console.log(data);
       if (data.error) {
         let alertOptions: any = {
           title: 'Connection failed',
