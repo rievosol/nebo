@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/of';
 
 /**
@@ -23,11 +25,20 @@ export class Api {
   }
 
   public getToken() {
-    console.log('getting token');
     return this.http.get(this.tokenUrl)
+      .catch(err => {
+        let error: any = {
+          error: {
+            getToken: err
+          }
+        };
+        return Observable.of(error);
+      })
       .map(res => {
+        if (res.error) {
+          return res;
+        }
         let token = res.text();
-        console.log(token);
         return token;
       });
   }
@@ -38,9 +49,19 @@ export class Api {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-    console.log('system connect');
     return this.http.post(this.systemConnectUrl, null, options)
+      .catch(err => {
+        let error: any = {
+          error: {
+            systemConnect: err
+          }
+        };
+        return Observable.of(error);
+      })
       .map(res => {
+        if (res.error) {
+          return res;
+        }
         let data = res.json();
         this.systemData = data;
         return data;
@@ -49,8 +70,13 @@ export class Api {
 
   public connect() {
     return this.getToken()
-      .flatMap(token => {
-        return this.systemConnect(token);
+      .flatMap(res => {
+        if (res.error) {
+          // this is not token, it's error from getting token
+          return Observable.of(res);
+        }
+        // getting token successful, pass token to systemConnect
+        return this.systemConnect(res);
       });
   }
 }
