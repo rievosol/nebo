@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { Api } from '../../providers/api';
 import { User } from '../../providers/user';
+import { Taxonomy } from '../../providers/taxonomy';
 
 import { TabsPage } from '../tabs/tabs';
 
@@ -21,10 +22,12 @@ export class SystemConnectPage {
               public navParams: NavParams,
               public api: Api,
               public user: User,
+              public taxonomy: Taxonomy,
               public alertCtrl: AlertController) {}
 
   ionViewDidLoad() {
     this.api.connect().subscribe(data => {
+      console.log(data);
       if (data.error) {
         let alertOptions: any = {
           title: 'Connection failed',
@@ -61,6 +64,7 @@ export class SystemConnectPage {
       }
       else {
         this.user.bootstrap();
+        this.taxonomy.bootstrap();
         this.navCtrl.setRoot(TabsPage);
       }
     },

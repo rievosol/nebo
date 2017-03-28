@@ -24,6 +24,7 @@ import { Api } from '../providers/api';
 import { User } from '../providers/user';
 import { DefaultRequestOptions } from '../providers/default-request-options';
 import { NodeService } from '../providers/node-service';
+import { Taxonomy } from '../providers/taxonomy';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -61,6 +62,7 @@ export function providers() {
     User,
     Api,
     NodeService,
+    Taxonomy,
     StatusBar,
     SplashScreen,
     { provide: RequestOptions, useClass: DefaultRequestOptions },

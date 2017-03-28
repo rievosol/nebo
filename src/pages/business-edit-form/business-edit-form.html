@@ -26,10 +26,7 @@
     <ion-item>
       <ion-label>Category</ion-label>
       <ion-select formControlName="category">
-        <ion-option value="3">Building Construction and Maintenance</ion-option>
-        <ion-option value="1">Food and Beverage</ion-option>
-        <ion-option value="4">Logistics and Transportation</ion-option>
-        <ion-option value="5">Travel and Tours</ion-option>
+        <ion-option *ngFor="let option of categoryOptions" value="{{option.tid}}">{{option.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>

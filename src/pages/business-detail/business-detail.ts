@@ -48,8 +48,4 @@ export class BusinessDetailPage {
     this.navCtrl.push(BusinessEditFormPage, {nid: this._nid});
   }
 
-  private checkPermissionEdit(node) {
-    console.log(node);
-  }
-
 }
