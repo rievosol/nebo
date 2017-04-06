@@ -39,7 +39,6 @@ export class BusinessDetailPage {
   favoriteText: string = 'Favorite';
   favoriteColor: string = 'light';
   favoriteCount: string;
-  refresh: boolean = false;
   state: string = 'loading';
   
   private _nid: any;
@@ -67,26 +66,18 @@ export class BusinessDetailPage {
     };
   }
 
-  ionViewDidLoad() {
-    this._nid = this.navParams.get('nid');
-    this.title = this.navParams.get('title');
-    this.loadNode().subscribe(status => {
-      this.state = 'loaded';
-      this.refresh = true;
-    });
+  ionViewWillEnter() {
+    this.state = 'loading';
   }
 
   ionViewDidEnter() {
-    if (this.refresh) {
-      let loading = this.loadingCtrl.create();
-      loading.present();
-      this.loadNode().subscribe(status => {
-        loading.dismiss();
-      });
-    }
+    this.loadNode().subscribe(status => {
+      this.state = 'loaded';
+    })
   }
 
   loadNode() {
+    this._nid = this.navParams.get('nid');
     return this.nodeService.load(this._nid)
       .flatMap(node => {
         console.log(node);
