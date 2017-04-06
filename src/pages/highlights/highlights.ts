@@ -2,6 +2,14 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
 
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
+import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
+import { EventDetailPage } from '../event-detail/event-detail';
+import { PromotionDetailPage } from '../promotion-detail/promotion-detail';
+import { ViewsService } from '../../providers/views-service';
+import { Api } from '../../providers/api';
+import { NodeService } from '../../providers/node-service';
+
+import 'rxjs/add/observable/forkJoin';
 
 /*
   Generated class for the Highlights page.
@@ -15,9 +23,48 @@ import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 })
 export class HighlightsPage {
 
+  announcements: any[];
+  events: any[];
+  promotions: any[];
+  state: string;
+
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              public actionSheetCtrl: ActionSheetController) {}
+              public actionSheetCtrl: ActionSheetController,
+              public views: ViewsService,
+              public api: Api,
+              public nodeService: NodeService) {
+    
+  }
+
+  ionViewWillEnter() {
+    this.state = 'loading';
+  }
+
+  ionViewDidEnter() {
+    let opts = [
+      {
+        key: 'announcement',
+        path: 'highlights.announcement'
+      },
+      {
+        key: 'event',
+        path: 'highlights.event'
+      },
+      {
+        key: 'promotion',
+        path: 'highlights.promotion'
+      }
+    ];
+    this.views.getViews(opts).subscribe(res => {
+      console.log(res);
+      this.announcements = res['announcement'];
+      this.events = res['event'];
+      this.promotions = res['promotion'];
+      this.state = 'loaded';
+    });
+
+  }
 
   addContent() {
     let actionSheet = this.actionSheetCtrl.create({
@@ -40,6 +87,26 @@ export class HighlightsPage {
       ]
     });
     actionSheet.present();
+  }
+
+  itemSelected(item) {
+    let params = {
+      nid: item.nid,
+      title: item.title
+    };
+    switch(item.type) {
+      case 'announcement':
+        this.navCtrl.push(AnnouncementDetailPage, params);
+        break;
+
+      case 'event':
+        this.navCtrl.push(EventDetailPage, params);
+        break;
+
+      case 'promotion':
+        this.navCtrl.push(PromotionDetailPage, params);
+        break;
+    }
   }
 
 }

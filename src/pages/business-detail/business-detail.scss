@@ -1,3 +1,69 @@
+$profileThumbnailDim: 100px;
+
 page-business-detail {
+  .cover-picture {
+    position: relative;
+    background-color: #ccc;
+    background-size: cover;
+    height: 240px;
+    z-index: 1;
+  }
+
+  .announcements, .events {
+    margin-top: 20px;
+  }
+
+  .gallery {
+    margin-top: 30px;
+    margin-bottom: 20px;
+
+    button {
+      padding: 0;
+    }
+  }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .profile {
+    ion-thumbnail {
+      img {
+        width: $profileThumbnailDim;
+        height: $profileThumbnailDim;
+      }
+    }
+
+    ion-icon {
+      margin: 2px 5px 2px 0;
+    }
+
+    .subtitle {
+      margin-top: 15px;
+      font-size: small;
+
+      ion-icon {
+        margin : {
+          top: 2px;
+          bottom: 2px;
+        }
+      }
+    }
+  }
+
+  .action-buttons {
+    button, a {
+      text-align: center;
+      width: 100%;
+    }
+    .action-text {
+      font-size: small;
+      margin-top: 10px;
+      text-transform: capitalize;
+    }
+  }
 
 }

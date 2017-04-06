@@ -13,15 +13,17 @@ import 'rxjs/add/observable/of';
 @Injectable()
 export class Api {
   
-  url: string = 'http://localhost/nebo';
-  serviceUrl: string = this.url + '/drupalgap';
-  tokenUrl: string = this.url + '/services/session/token';
-  systemConnectUrl: string = this.serviceUrl + '/system/connect';
-
+  url: string;
+  serviceUrl: string;
+  tokenUrl: string;
+  systemConnectUrl: string;
   systemData: any;
 
   constructor(public http: Http) {
-    
+    this.url = 'http://localhost/nebo';
+    this.serviceUrl = this.url + '/drupalgap';
+    this.tokenUrl = this.url + '/services/session/token';
+    this.systemConnectUrl = this.serviceUrl + '/system/connect';
   }
 
   public getToken() {

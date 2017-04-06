@@ -19,12 +19,23 @@ import { PromotionEditFormPage } from '../pages/promotion-edit-form/promotion-ed
 import { BrowseBusinessPage } from '../pages/browse-business/browse-business';
 import { BrowseOrganizationPage } from '../pages/browse-organization/browse-organization';
 import { BusinessDetailPage } from '../pages/business-detail/business-detail';
+import { OrganizationDetailPage } from '../pages/organization-detail/organization-detail';
+import { AnnouncementDetailPage } from '../pages/announcement-detail/announcement-detail';
+import { EventDetailPage } from '../pages/event-detail/event-detail';
+import { PromotionDetailPage } from '../pages/promotion-detail/promotion-detail';
+import { ModalMapPage } from '../pages/modal-map/modal-map';
+import { MoreOptionsPopoverPage } from '../pages/more-options-popover/more-options-popover';
+import { GalleryPage } from '../pages/gallery/gallery';
 
 import { Api } from '../providers/api';
 import { User } from '../providers/user';
 import { DefaultRequestOptions } from '../providers/default-request-options';
 import { NodeService } from '../providers/node-service';
 import { Taxonomy } from '../providers/taxonomy';
+import { FlagService } from '../providers/flag-service';
+import { ViewsService } from '../providers/views-service';
+
+import { NeboLoadingSpinner } from '../components/nebo-loading-spinner/nebo-loading-spinner';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -46,7 +57,15 @@ let pages = [
   PromotionEditFormPage,
   BrowseBusinessPage,
   BrowseOrganizationPage,
-  BusinessDetailPage
+  BusinessDetailPage,
+  OrganizationDetailPage,
+  AnnouncementDetailPage,
+  EventDetailPage,
+  PromotionDetailPage,
+  ModalMapPage,
+  MoreOptionsPopoverPage,
+  GalleryPage,
+  NeboLoadingSpinner
 ];
 
 export function declarations() {
@@ -63,6 +82,8 @@ export function providers() {
     Api,
     NodeService,
     Taxonomy,
+    FlagService,
+    ViewsService,
     StatusBar,
     SplashScreen,
     { provide: RequestOptions, useClass: DefaultRequestOptions },

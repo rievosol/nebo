@@ -13,11 +13,43 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <ion-fab bottom right>
-    <button ion-fab color="primary" (click)="addContent()">
-      <ion-icon name="add"></ion-icon>
-    </button>
-  </ion-fab>
-  <p>This is page Highlights.</p>
+<ion-content [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <ion-fab bottom right>
+      <button ion-fab color="primary" (click)="addContent()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-fab>
+    
+    <div class="announcements" *ngIf="announcements.length">
+      <ion-card>
+        <ion-list>
+          <ion-item-divider color="primary">NEW ANNOUNCEMENTS</ion-item-divider>
+          <button ion-item *ngFor="let item of announcements" (click)="itemSelected(item)">
+            <ion-thumbnail item-left>
+              <img src="{{ item.image }}">
+            </ion-thumbnail>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.content }}</p>
+          </button>
+        </ion-list>
+      </ion-card>
+    </div>
+
+    <div class="events" *ngIf="events.length">
+      <ion-card>
+        <ion-list>
+          <ion-item-divider color="primary">UPCOMING EVENTS</ion-item-divider>
+          <button ion-item class="my-item" *ngFor="let item of events" (click)="itemSelected(item)">
+            <ion-thumbnail item-left>
+              <img src="{{ item.image }}">
+            </ion-thumbnail>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.content }}</p>
+          </button>
+        </ion-list>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>

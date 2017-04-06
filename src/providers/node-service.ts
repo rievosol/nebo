@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
-import { ActionSheetController, ToastController, LoadingController } from 'ionic-angular';
+import { App, ActionSheetController, ToastController, LoadingController } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 
 import { Api } from './api';
 import { User } from './user';
-//import { BusinessEditFormPage } from '../pages/business-edit-form/business-edit-form';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/concatMap';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/from';
 
 /*
   Generated class for the NodeService provider.
@@ -22,7 +23,8 @@ export class NodeService {
 
   nodeUrl: string = this.api.serviceUrl + '/node';
 
-  constructor(public http: Http,
+  constructor(public appCtrl: App,
+              public http: Http,
               public api: Api,
               public user: User,
               public actionSheetCtrl: ActionSheetController,
@@ -31,7 +33,7 @@ export class NodeService {
     
   }
 
-  getNode(nid: number) {
+  load(nid: number) {
     return this.http.get(this.nodeUrl + '/' + nid + '.json')
       .map(res => res.json());
   }
@@ -57,7 +59,6 @@ export class NodeService {
 
   save(node: any) {
     let loading = this.loadingCtrl.create({
-      spinner: 'ios',
       content: 'Saving...'
     });
     loading.present();
@@ -99,4 +100,20 @@ export class NodeService {
     }
   }
 
+  getChildNodes(node) {
+    let nodes = {
+      announcement: [],
+      event: [],
+      promotion: []
+    };
+    return this.http.get(this.api.url + '/entity_child_nodes.json/' + node.nid)
+      .map(res => {
+        let data = res.json();
+        for (let item of data.nodes) {
+          nodes[item.type].push(item);
+        }
+        return nodes;
+      });
+  }
+ 
 }

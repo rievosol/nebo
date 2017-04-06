@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { Http } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
 
 import { Api } from '../../providers/api';
+import { ViewsService } from '../../providers/views-service';
 import { BusinessDetailPage } from '../business-detail/business-detail';
-
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/observable/from';
 
 /*
   Generated class for the BrowseBusiness page.
@@ -23,25 +20,27 @@ export class BrowseBusinessPage {
 
   items: any[] = [];
   url: string = this.api.url + '/testing-business-listing.json';
+  state: string = 'loading';
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public http: Http,
-              public api: Api) {}
+              public api: Api,
+              public views: ViewsService) {}
 
   ionViewDidLoad() {
-    this.http.get(this.url)
-      .concatMap(res => {
-        let data = res.json();
-        return Observable.from(data.nodes);
-      })
-      .subscribe(node => {
-        this.items.push(node);
+    this.views.getView('browse.business')
+      .subscribe(nodes => {
+        this.items = nodes;
+        this.state = 'loaded';
       });
   }
 
   itemSelected(item) {
-    this.navCtrl.push(BusinessDetailPage, {nid: item.nid});
+    this.navCtrl.push(BusinessDetailPage, {
+      nid: item.nid,
+      title: item.title
+    });
   }
 
 }

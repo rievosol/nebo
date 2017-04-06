@@ -53,7 +53,7 @@ export class BusinessEditFormPage {
       this.buttonText = 'Update';
       this.pageTitle = 'Update Business';
 
-      this.nodeService.getNode(nid)
+      this.nodeService.load(nid)
         .flatMap(node => {
           let vocab = this.api.systemData.field_info_fields.field_category_business.settings.allowed_values[0].vocabulary;
           let query = {

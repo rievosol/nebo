@@ -24516,3 +24516,116 @@ ion-navbar.toolbar {
     padding-top: calc(16px + 20px);
   }
 }
+
+nebo-loading-spinner .spinner-container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+page-browse-business .spinner-container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+page-business-detail .cover-picture {
+  position: relative;
+  background-color: #ccc;
+  background-size: cover;
+  height: 240px;
+  z-index: 1;
+}
+
+page-business-detail .announcements, page-business-detail .events {
+  margin-top: 20px;
+}
+
+page-business-detail .gallery {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+page-business-detail .gallery button {
+  padding: 0;
+}
+
+page-business-detail .spinner-container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+page-business-detail .profile ion-thumbnail img {
+  width: 100px;
+  height: 100px;
+}
+
+page-business-detail .profile ion-icon {
+  margin: 2px 5px 2px 0;
+}
+
+page-business-detail .profile .subtitle {
+  margin-top: 15px;
+  font-size: small;
+}
+
+page-business-detail .profile .subtitle ion-icon {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+page-business-detail .action-buttons button, page-business-detail .action-buttons a {
+  text-align: center;
+  width: 100%;
+}
+
+page-business-detail .action-buttons .action-text {
+  font-size: small;
+  margin-top: 10px;
+  text-transform: capitalize;
+}
+
+page-gallery .close-button {
+  position: absolute;
+  z-index: 10;
+  left: 10px;
+  top: 7px;
+}
+
+page-gallery ion-slides {
+  background-color: black;
+}
+
+page-highlights ion-content {
+  background-color: #e5e5e5 !important;
+}
+
+page-highlights .card-md .item-md.item-block .item-inner {
+  border-bottom: 1px solid #dedede;
+}
+
+page-highlights .list-md > .item-block:last-child .item-inner {
+  border-bottom: 0;
+}

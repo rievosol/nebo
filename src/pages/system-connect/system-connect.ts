@@ -65,7 +65,7 @@ export class SystemConnectPage {
       else {
         this.user.bootstrap();
         this.taxonomy.bootstrap();
-        this.navCtrl.setRoot(TabsPage);
+        this.navCtrl.setRoot(TabsPage, null, {animate: true, direction: 'forward'});
       }
     },
     err => {
