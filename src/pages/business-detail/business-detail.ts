@@ -12,6 +12,7 @@ import { GalleryPage } from '../gallery/gallery';
 
 import { NodeService } from '../../providers/node-service';
 import { FlagService } from '../../providers/flag-service';
+import { Util } from '../../providers/util';
 
 /*
   Generated class for the BusinessDetail page.
@@ -52,7 +53,8 @@ export class BusinessDetailPage {
               public flagService: FlagService,
               public toastCtrl: ToastController,
               public modalCtrl: ModalController,
-              public popoverCtrl: PopoverController) {
+              public popoverCtrl: PopoverController,
+              public util: Util) {
     this.node = {};
     this.childNodes = {
       announcement: [],
@@ -71,13 +73,14 @@ export class BusinessDetailPage {
   }
 
   ionViewDidEnter() {
+    this._nid = this.navParams.data.nid;
+    this.title = this.navParams.data.title;
     this.loadNode().subscribe(status => {
       this.state = 'loaded';
     })
   }
 
   loadNode() {
-    this._nid = this.navParams.get('nid');
     return this.nodeService.load(this._nid)
       .flatMap(node => {
         console.log(node);
@@ -86,9 +89,9 @@ export class BusinessDetailPage {
         this.body = node.body.und ? node.body.und[0].value : '';
         this.canEdit = this.nodeService.checkPermissionEdit(node);
         this.category = node.field_category_business.und[0].name;
-        this.images = node.field_image.und;
+        this.images = node.field_image.und ? node.field_image.und : [];
         this.phone = node.field_phone.und ? node.field_phone.und[0].value : '';
-        this.sms = this.sanitize('sms:' + this.phone);
+        this.sms = this.util.sanitize('sms:' + this.phone);
         if (node.field_position.und) {
           let position = node.field_position.und[0];
           this.position = {
@@ -96,8 +99,12 @@ export class BusinessDetailPage {
             lon: position.lon,
             geo: position.lat + ',' + position.lon
           };
+          this.geo = this.util.sanitize('geo:' + this.position.geo);
         }
-        this.geo = this.sanitize('geo:' + this.position.geo);
+        else {
+          this.position = null;
+        }
+        
         this.node.flag = node.flag_status;
         this.favoriteCount = node.flag_count['favorites'] ? node.flag_count['favorites'] : '';
         this.updateFavorite(node.flag_status['favorites']);
@@ -144,7 +151,7 @@ export class BusinessDetailPage {
 
       case 'navigate':
       case 'map':
-        return this.position.lat && this.position.lon ? true : false;
+        return this.position && this.position.lat && this.position.lon ? true : false;
     }
   }
 
@@ -225,10 +232,6 @@ export class BusinessDetailPage {
       return true;
     }
     return false;
-  }
-
-  sanitize(url: string) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   showGallery(index) {

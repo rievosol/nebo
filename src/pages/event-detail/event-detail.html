@@ -6,16 +6,122 @@
 -->
 <ion-header>
   <ion-navbar>
-    <ion-title>{{ title }}</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only>
+      <button ion-button icon-only (click)="editNode()" *ngIf="canEdit">
         <ion-icon name="create"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-
-<ion-content padding>
-
+<ion-content [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <!-- Profile -->
+    <div class="profile">
+      <ion-toolbar color="light" class="info">
+        <ion-grid>
+          <ion-row text-center>
+            <ion-col>
+              <ion-icon name="flag" item-left></ion-icon>
+              {{ type }}
+            </ion-col>
+            <ion-col>
+              <ion-icon name="eye" item-left></ion-icon>
+              {{ expireInterval }}
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-toolbar>
+      <ion-list no-lines>
+        <ion-item color="danger" class="date">
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                {{ start }}
+              </ion-col>
+              <ion-col col-4 text-right *ngIf="timeToStart.length">
+                <ion-icon name="timer" item-left class="time-to-start"></ion-icon>
+                {{ timeToStart }}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </ion-list>
+      <div class="title">
+        <button class="more-button" color="dark" ion-button icon-only clear (click)="viewMoreInfo($event)">
+          <ion-icon name="md-more"></ion-icon>
+        </button>
+        <h1 padding>{{ title }}</h1>
+      </div>
+      <ion-list no-lines>
+        <button ion-item color="primary" (click)="viewRefNode()">
+          <ion-avatar item-left>
+            <img src="http://localhost/nebo/sites/default/files/business/13_1462684341870.jpg">
+          </ion-avatar>
+          <h2>{{ group.title }}</h2>
+          <ion-icon name="share-alt" item-right></ion-icon>
+        </button>
+      </ion-list>
+    </div>
+    <!-- Action buttons -->
+    <ion-toolbar class="action-buttons" color="dark" *ngIf="displayActionButtons()">
+      <ion-grid>
+        <ion-row text-center>
+          <!-- Call -->
+          <ion-col *ngIf="displayActionButton('call')">
+            <a ion-button icon-only large clear color="light" href="tel:{{ phone }}">
+              <div>
+                <ion-icon name="call"></ion-icon>
+                <div class="action-text">Call</div>
+              </div>
+            </a>
+          </ion-col>
+          <!-- SMS -->
+          <ion-col *ngIf="displayActionButton('sms')">
+            <a ion-button icon-only large clear color="light" [href]="sms">
+              <div>
+                <ion-icon name="text"></ion-icon>
+                <div class="action-text">SMS</div>
+              </div>
+            </a>
+          </ion-col>
+          <!-- Navigate -->
+          <ion-col *ngIf="displayActionButton('navigate')">
+            <a ion-button icon-only large clear color="light" [href]="geo">
+              <div>
+                <ion-icon name="navigate"></ion-icon>
+                <div class="action-text">Navigate</div>
+              </div>
+            </a>
+          </ion-col>
+          <!-- Map -->
+          <ion-col *ngIf="displayActionButton('map')">
+            <button ion-button icon-only large clear color="light" (click)="showMap()">
+              <div>
+                <ion-icon name="map"></ion-icon>
+                <div class="action-text">Map</div>
+              </div>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-toolbar>
+    <!-- Gallery -->
+    <div class="gallery" *ngIf="images.length">
+      <ion-list>
+        <ion-item>
+          <ion-thumbnail item-left *ngFor="let image of images; let i = index">
+            <a (click)="showGallery(i)">
+              <img src="{{ image.url }}">
+            </a>
+          </ion-thumbnail>
+        </ion-item>
+      </ion-list>
+    </div>
+    <!-- Content -->
+    <div class="body" padding>
+      <p>{{ body }}</p>
+    </div>
+  </div>
 </ion-content>

@@ -27,6 +27,9 @@ export class ViewsService {
       },
       browse: {
         business: base + '/testing-business-listing.json' // testing
+      },
+      og: {
+        audienceOptions: base + '/og-group-audience-options.json'
       }
     };
   }

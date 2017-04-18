@@ -44,7 +44,7 @@ export class NodeService {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-
+    console.log(node);
     if (node.nid) {
       // update
       return this.http.put(this.nodeUrl + '/' + node.nid + '.json', node, options)

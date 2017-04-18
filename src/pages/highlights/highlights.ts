@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
 
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
+import { AnnouncementEditFormPage } from '../announcement-edit-form/announcement-edit-form';
+import { EventEditFormPage } from '../event-edit-form/event-edit-form';
 import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
 import { EventDetailPage } from '../event-detail/event-detail';
 import { PromotionDetailPage } from '../promotion-detail/promotion-detail';
 import { ViewsService } from '../../providers/views-service';
 import { Api } from '../../providers/api';
 import { NodeService } from '../../providers/node-service';
-
-import 'rxjs/add/observable/forkJoin';
 
 /*
   Generated class for the Highlights page.
@@ -72,17 +72,19 @@ export class HighlightsPage {
       buttons: [
         {
           text: 'Business',
-          handler: () => {
-            console.log('create business');
-            this.navCtrl.push(BusinessEditFormPage);
-          }
+          handler: () => this.navCtrl.push(BusinessEditFormPage)
+        },
+        {
+          text: 'Announcement',
+          handler: () => this.navCtrl.push(AnnouncementEditFormPage)
+        },
+        {
+          text: 'Event',
+          handler: () => this.navCtrl.push(EventEditFormPage)
         },
         {
           text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            console.log('cancel clicked');
-          }
+          role: 'cancel'
         }
       ]
     });

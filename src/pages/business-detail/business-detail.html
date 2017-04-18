@@ -38,26 +38,6 @@
             </ion-item>
           </ion-col>
         </ion-row>
-        <ion-row text-center>
-          <ion-col>
-            <div>
-              <ion-icon name="star" item-left></ion-icon>
-              4.5
-            </div>
-          </ion-col>
-          <ion-col>
-            <div>
-              <ion-icon name="person" item-left></ion-icon>
-              28
-            </div>
-          </ion-col>
-          <ion-col *ngIf="showFavoriteCount()">
-            <div>
-              <ion-icon name="heart" item-left></ion-icon>
-              {{ favoriteCount }}
-            </div>
-          </ion-col>
-        </ion-row>
       </ion-grid>
     </div>
   
@@ -128,8 +108,13 @@
     <div class="events" *ngIf="childNodes.event.length">
       <ion-list>
         <ion-item-divider color="primary">UPCOMING EVENTS</ion-item-divider>
-        <ion-item>Nebo Tour - Shah Alam</ion-item>
-        <ion-item>Nebo Tour - Ipoh</ion-item>
+        <button ion-item *ngFor="let item of childNodes.event" (click)="viewChildNode(item)">
+          <ion-thumbnail item-left>
+            <img src="{{ item.image }}">
+          </ion-thumbnail>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.content }}</p>
+        </button>
       </ion-list>
     </div>
     
@@ -145,8 +130,8 @@
       </ion-list>
     </div>
     
-    <div class="about">
-      <p padding>{{ body }}</p>
+    <div class="about" padding>
+      <p>{{ body }}</p>
     </div>
   </div>
 </ion-content>

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Http } from '@angular/http';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { NavController, NavParams } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
@@ -20,22 +19,22 @@ import 'rxjs/add/operator/map';
 })
 export class BusinessEditFormPage {
   
-  private businessEdit: FormGroup;
-  private _action: string = 'create';
-  private _nid: string = '';
-  public buttonText: string = 'Create';
-  public pageTitle: string = 'Create New Business';
-  public categoryOptions: any[] = [];
+  private form: FormGroup;
+  private action: string;
+  private nid: number;
+  public buttonText: string;
+  public pageTitle: string;
+  public categoryOptions: any[];
+  public state: string;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public fb: FormBuilder,
               public nodeService: NodeService,
-              public http: Http,
               public api: Api,
               public taxonomy: Taxonomy) {
     
-    this.businessEdit = this.fb.group({
+    this.form = this.fb.group({
       title: ['', Validators.required],
       body: ['', Validators.required],
       category: [''],
@@ -43,17 +42,21 @@ export class BusinessEditFormPage {
       latitude: [''],
       longitude: ['']
     });
-
+    this.state = 'loading';
+    this.nid = this.navParams.get('nid');
+    this.action = 'create';
+    this.buttonText = 'Create';
+    this.pageTitle = 'Create New Business';
+    this.categoryOptions = [];
   }
 
   ionViewDidLoad() {
-    let nid = this.navParams.get('nid');
-    if (typeof nid !== 'undefined') {
-      this._action = 'update';
+    if (this.nid) {
+      this.action = 'update';
       this.buttonText = 'Update';
       this.pageTitle = 'Update Business';
 
-      this.nodeService.load(nid)
+      this.nodeService.load(this.nid)
         .flatMap(node => {
           let vocab = this.api.systemData.field_info_fields.field_category_business.settings.allowed_values[0].vocabulary;
           let query = {
@@ -68,30 +71,31 @@ export class BusinessEditFormPage {
             });
         })
         .subscribe(node => {
-          console.log(node);
-          this._nid = node.nid;
-          this.businessEdit.controls['title'].setValue(node.title);
+          this.form.controls['title'].setValue(node.title);
 
           let body = node.body.und ? node.body.und[0].value : '';
-          this.businessEdit.controls['body'].setValue(body);
+          this.form.controls['body'].setValue(body);
 
           let category = node.field_category_business.und ? node.field_category_business.und[0].tid : '';
-          this.businessEdit.controls['category'].setValue(category);
+          this.form.controls['category'].setValue(category);
 
           let phone = node.field_phone.und ? node.field_phone.und[0].value : '';
-          this.businessEdit.controls['phone'].setValue(phone);
+          this.form.controls['phone'].setValue(phone);
 
-          let lat = node.field_position.und ? node.field_position.und[0].lat : '';
-          this.businessEdit.controls['latitude'].setValue(lat);
+          let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
+          this.form.controls['latitude'].setValue(position.lat);
+          this.form.controls['longitude'].setValue(position.lon);
 
-          let lon = node.field_position.und ? node.field_position.und[0].lon : '';
-          this.businessEdit.controls['longitude'].setValue(lon);
+          this.state = 'loaded';
         });
+    }
+    else {
+      this.state = 'loaded';
     }
   }
 
-  saveContent() {
-    let input = this.businessEdit.value;
+  save() {
+    let input = this.form.value;
     let node: any = {
       type: 'business',
       title: input.title,
@@ -109,8 +113,8 @@ export class BusinessEditFormPage {
       }
     };
 
-    if (this._action == 'update') {
-      node.nid = this._nid;
+    if (this.action == 'update') {
+      node.nid = this.nid;
     }
     
     this.nodeService.save(node).subscribe(data => {

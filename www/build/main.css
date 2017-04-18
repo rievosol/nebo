@@ -24530,6 +24530,49 @@ nebo-loading-spinner .spinner-container {
   height: 100%;
 }
 
+page-announcement-detail .profile ion-icon {
+  margin: 2px 5px 2px 0;
+}
+
+page-announcement-detail .profile ion-list {
+  margin-bottom: 0;
+}
+
+page-announcement-detail .profile .title {
+  position: relative;
+}
+
+page-announcement-detail .profile .title h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 30px;
+  padding-bottom: 50px;
+}
+
+page-announcement-detail .profile .title .more-button {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  top: 3px;
+}
+
+page-announcement-detail .profile .info {
+  font-size: small;
+}
+
+page-announcement-detail .profile .info ion-icon {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+page-announcement-detail .profile .info ion-grid {
+  padding: 0;
+}
+
+page-announcement-detail .body p {
+  white-space: pre-line;
+}
+
 page-browse-business .spinner-container {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -24543,6 +24586,10 @@ page-browse-business .spinner-container {
   height: 100%;
 }
 
+page-business-detail ion-content {
+  background-color: #e5e5e5 !important;
+}
+
 page-business-detail .cover-picture {
   position: relative;
   background-color: #ccc;
@@ -24551,13 +24598,8 @@ page-business-detail .cover-picture {
   z-index: 1;
 }
 
-page-business-detail .announcements, page-business-detail .events {
-  margin-top: 20px;
-}
-
-page-business-detail .gallery {
-  margin-top: 30px;
-  margin-bottom: 20px;
+page-business-detail .announcements, page-business-detail .events, page-business-detail .gallery, page-business-detail .about {
+  margin-top: 16px;
 }
 
 page-business-detail .gallery button {
@@ -24575,6 +24617,10 @@ page-business-detail .spinner-container {
   -ms-flex-align: center;
   align-items: center;
   height: 100%;
+}
+
+page-business-detail .profile {
+  background-color: #fff;
 }
 
 page-business-detail .profile ion-thumbnail img {
@@ -24607,6 +24653,77 @@ page-business-detail .action-buttons .action-text {
   text-transform: capitalize;
 }
 
+page-business-detail .about {
+  background-color: #fff;
+}
+
+page-business-detail .about p {
+  white-space: pre-line;
+}
+
+page-event-detail .profile ion-icon {
+  margin: 2px 5px 2px 0;
+}
+
+page-event-detail .profile ion-list {
+  margin-bottom: 0;
+}
+
+page-event-detail .profile .title {
+  position: relative;
+}
+
+page-event-detail .profile .title h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 30px;
+  padding-bottom: 50px;
+}
+
+page-event-detail .profile .title .more-button {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  top: 3px;
+}
+
+page-event-detail .profile .date ion-grid, page-event-detail .profile .date ion-row {
+  padding: 0;
+}
+
+page-event-detail .profile .date .time-to-start {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+page-event-detail .profile .info {
+  font-size: small;
+}
+
+page-event-detail .profile .info ion-icon {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+page-event-detail .profile .info ion-grid {
+  padding: 0;
+}
+
+page-event-detail .action-buttons button, page-event-detail .action-buttons a {
+  text-align: center;
+  width: 100%;
+}
+
+page-event-detail .action-buttons .action-text {
+  font-size: small;
+  margin-top: 10px;
+  text-transform: capitalize;
+}
+
+page-event-detail .body p {
+  white-space: pre-line;
+}
+
 page-gallery .close-button {
   position: absolute;
   z-index: 10;
@@ -24628,4 +24745,12 @@ page-highlights .card-md .item-md.item-block .item-inner {
 
 page-highlights .list-md > .item-block:last-child .item-inner {
   border-bottom: 0;
+}
+
+page-more-info-popover ion-item {
+  font-size: small;
+}
+
+page-more-info-popover ion-col {
+  font-size: small;
 }

@@ -25,6 +25,7 @@ import { EventDetailPage } from '../pages/event-detail/event-detail';
 import { PromotionDetailPage } from '../pages/promotion-detail/promotion-detail';
 import { ModalMapPage } from '../pages/modal-map/modal-map';
 import { MoreOptionsPopoverPage } from '../pages/more-options-popover/more-options-popover';
+import { MoreInfoPopoverPage } from '../pages/more-info-popover/more-info-popover';
 import { GalleryPage } from '../pages/gallery/gallery';
 
 import { Api } from '../providers/api';
@@ -34,6 +35,8 @@ import { NodeService } from '../providers/node-service';
 import { Taxonomy } from '../providers/taxonomy';
 import { FlagService } from '../providers/flag-service';
 import { ViewsService } from '../providers/views-service';
+import { Neerby } from '../providers/neerby';
+import { Util } from '../providers/util';
 
 import { NeboLoadingSpinner } from '../components/nebo-loading-spinner/nebo-loading-spinner';
 
@@ -64,6 +67,7 @@ let pages = [
   PromotionDetailPage,
   ModalMapPage,
   MoreOptionsPopoverPage,
+  MoreInfoPopoverPage,
   GalleryPage,
   NeboLoadingSpinner
 ];
@@ -84,6 +88,8 @@ export function providers() {
     Taxonomy,
     FlagService,
     ViewsService,
+    Neerby,
+    Util,
     StatusBar,
     SplashScreen,
     { provide: RequestOptions, useClass: DefaultRequestOptions },

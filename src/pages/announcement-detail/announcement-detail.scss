@@ -1,3 +1,48 @@
 page-announcement-detail {
+  .profile {
+    ion-icon {
+      margin: 2px 5px 2px 0;
+    }
 
+    ion-list {
+      margin-bottom: 0;
+    }
+
+    .title {
+      position: relative;
+
+      h1 {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 30px;
+        padding-bottom: 50px;
+      }
+
+      .more-button {
+        position: absolute;
+        z-index: 10;
+        right: 0;
+        top: 3px;
+      }
+    }
+
+    .info {
+      font-size: small;
+
+      ion-icon {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      ion-grid {
+        padding: 0;
+      }
+    }
+
+  }
+
+  .body {
+    p {
+      white-space: pre-line;
+    }
+  }
 }

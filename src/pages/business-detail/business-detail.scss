@@ -1,6 +1,9 @@
 $profileThumbnailDim: 100px;
 
 page-business-detail {
+  ion-content {
+    background-color: #e5e5e5 !important;
+  }
   .cover-picture {
     position: relative;
     background-color: #ccc;
@@ -9,14 +12,11 @@ page-business-detail {
     z-index: 1;
   }
 
-  .announcements, .events {
-    margin-top: 20px;
+  .announcements, .events, .gallery, .about {
+    margin-top: 16px;
   }
 
   .gallery {
-    margin-top: 30px;
-    margin-bottom: 20px;
-
     button {
       padding: 0;
     }
@@ -30,6 +30,8 @@ page-business-detail {
   }
 
   .profile {
+    background-color: #fff;
+
     ion-thumbnail {
       img {
         width: $profileThumbnailDim;
@@ -63,6 +65,14 @@ page-business-detail {
       font-size: small;
       margin-top: 10px;
       text-transform: capitalize;
+    }
+  }
+
+  .about {
+    background-color: #fff;
+
+    p {
+      white-space: pre-line;
     }
   }
 
