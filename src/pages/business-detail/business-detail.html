@@ -18,7 +18,7 @@
 <ion-content [ngSwitch]="state">
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
-    <div class="cover-picture">Cover picture here</div>
+    <div class="cover-picture"></div>
     <div class="profile">
       <ion-grid>
         <ion-row>
@@ -39,6 +39,9 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+      <button class="more-button" color="dark" ion-button icon-only clear (click)="viewMoreInfo($event)">
+        <ion-icon name="md-more"></ion-icon>
+      </button>
     </div>
   
     <ion-toolbar class="action-buttons" color="dark">

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
 
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
+import { OrganizationEditFormPage } from '../organization-edit-form/organization-edit-form';
 import { AnnouncementEditFormPage } from '../announcement-edit-form/announcement-edit-form';
 import { EventEditFormPage } from '../event-edit-form/event-edit-form';
 import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
@@ -73,6 +74,10 @@ export class HighlightsPage {
         {
           text: 'Business',
           handler: () => this.navCtrl.push(BusinessEditFormPage)
+        },
+        {
+          text: 'Organization',
+          handler: () => this.navCtrl.push(OrganizationEditFormPage)
         },
         {
           text: 'Announcement',

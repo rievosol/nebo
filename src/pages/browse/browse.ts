@@ -3,6 +3,9 @@ import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
 import { BrowseBusinessPage } from '../browse-business/browse-business';
 import { BrowseOrganizationPage } from '../browse-organization/browse-organization';
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
+import { OrganizationEditFormPage } from '../organization-edit-form/organization-edit-form';
+import { AnnouncementEditFormPage } from '../announcement-edit-form/announcement-edit-form';
+import { EventEditFormPage } from '../event-edit-form/event-edit-form';
 
 /*
   Generated class for the Browse page.
@@ -32,17 +35,23 @@ export class BrowsePage {
       buttons: [
         {
           text: 'Business',
-          handler: () => {
-            console.log('create business');
-            this.navCtrl.push(BusinessEditFormPage);
-          }
+          handler: () =>  this.navCtrl.push(BusinessEditFormPage)
+        },
+        {
+          text: 'Organization',
+          handler: () => this.navCtrl.push(OrganizationEditFormPage)
+        },
+        {
+          text: 'Announcement',
+          handler: () => this.navCtrl.push(AnnouncementEditFormPage)
+        },
+        {
+          text: 'Event',
+          handler: () => this.navCtrl.push(EventEditFormPage)
         },
         {
           text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            console.log('cancel clicked');
-          }
+          role: 'cancel'
         }
       ]
     });

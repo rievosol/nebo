@@ -5,14 +5,133 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>organizationDetail</ion-title>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="editNode()" *ngIf="canEdit">
+        <ion-icon name="create"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
+<ion-content [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <div class="cover-picture">Cover picture here</div>
+    <div class="profile">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item no-lines>
+              <ion-thumbnail item-left>
+                <img src="http://localhost/nebo/sites/default/files/business/13_1462684341870.jpg">
+              </ion-thumbnail>
+              <h1>{{ title }}</h1>
+              <div class="subtitle">
+                <ion-icon name="flag" item-left></ion-icon>
+                {{ category }}
+                <br/>
+                <ion-icon name="pin" item-left></ion-icon>
+                1.5km from here
+              </div>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  
+    <ion-toolbar class="action-buttons" color="dark">
+      <ion-grid>
+        <ion-row text-center>
+          <!-- Favorite -->
+          <ion-col>
+            <button ion-button icon-only large clear [color]="favoriteColor" (click)="favorite()">
+              <div>
+                <ion-icon name="heart"></ion-icon>
+                <div class="action-text">{{ favoriteText }}</div>
+              </div>
+            </button>
+          </ion-col>
+          <!-- Call -->
+          <ion-col *ngIf="displayActionButton('call')">
+            <a ion-button icon-only large clear color="light" href="tel:{{ phone }}">
+              <div>
+                <ion-icon name="call"></ion-icon>
+                <div class="action-text">Call</div>
+              </div>
+            </a>
+          </ion-col>
+          <!-- SMS -->
+          <ion-col *ngIf="displayActionButton('sms')">
+            <a ion-button icon-only large clear color="light" [href]="sms">
+              <div>
+                <ion-icon name="text"></ion-icon>
+                <div class="action-text">SMS</div>
+              </div>
+            </a>
+          </ion-col>
+          <!-- Navigate -->
+          <ion-col *ngIf="displayActionButton('navigate')">
+            <a ion-button icon-only large clear color="light" [href]="geo">
+              <div>
+                <ion-icon name="navigate"></ion-icon>
+                <div class="action-text">Navigate</div>
+              </div>
+            </a>
+          </ion-col>
+          <!-- Map -->
+          <ion-col *ngIf="displayActionButton('map')">
+            <button ion-button icon-only large clear color="light" (click)="showMap()">
+              <div>
+                <ion-icon name="map"></ion-icon>
+                <div class="action-text">Map</div>
+              </div>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-toolbar>
+    <div class="announcements" *ngIf="childNodes.announcement.length">
+      <ion-list>
+        <ion-item-divider color="primary">ANNOUNCEMENTS</ion-item-divider>
+        <button ion-item *ngFor="let item of childNodes.announcement" (click)="viewChildNode(item)">
+          <ion-thumbnail item-left>
+            <img src="{{ item.image }}">
+          </ion-thumbnail>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.content }}</p>
+        </button>
+      </ion-list>
+    </div>
 
-<ion-content padding>
-
+    <div class="events" *ngIf="childNodes.event.length">
+      <ion-list>
+        <ion-item-divider color="primary">UPCOMING EVENTS</ion-item-divider>
+        <button ion-item *ngFor="let item of childNodes.event" (click)="viewChildNode(item)">
+          <ion-thumbnail item-left>
+            <img src="{{ item.image }}">
+          </ion-thumbnail>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.content }}</p>
+        </button>
+      </ion-list>
+    </div>
+    
+    <div class="gallery" *ngIf="images.length">
+      <ion-list>
+        <ion-item>
+          <ion-thumbnail item-left *ngFor="let image of images; let i = index">
+            <a (click)="showGallery(i)">
+              <img src="{{ image.url }}">
+            </a>
+          </ion-thumbnail>
+        </ion-item>
+      </ion-list>
+    </div>
+    
+    <div class="about" padding>
+      <p>{{ body }}</p>
+    </div>
+  </div>
 </ion-content>

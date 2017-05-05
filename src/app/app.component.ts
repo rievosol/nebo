@@ -11,7 +11,6 @@ import { SystemConnectPage } from '../pages/system-connect/system-connect';
 import { MyAccountPage } from '../pages/my-account/my-account';
 import { MyContentPage } from '../pages/my-content/my-content';
 import { MyFavoritesPage } from '../pages/my-favorites/my-favorites';
-import { TabsPage } from '../pages/tabs/tabs';
 
 
 @Component({
@@ -35,13 +34,13 @@ export class MyApp {
 
     // used for an example of ngFor and navigation
     this.authPages = [
-      { title: 'My Account', component: MyAccountPage, icon: 'person' },
-      { title: 'My Content', component: MyContentPage, icon: 'folder' },
-      { title: 'My Favorites', component: MyFavoritesPage, icon: 'heart' }
+      { title: 'My Account', component: MyAccountPage, icon: 'ios-person-outline' },
+      { title: 'My Content', component: MyContentPage, icon: 'ios-folder-outline' },
+      { title: 'My Favorites', component: MyFavoritesPage, icon: 'ios-heart-outline' }
     ];
 
     this.anonPages = [
-      { title: 'Login', component: LoginPage, icon: 'exit' }
+      { title: 'Login', component: LoginPage, icon: 'ios-exit-outline' }
     ];
 
   }
@@ -63,7 +62,7 @@ export class MyApp {
 
   logout() {
     this.user.logout().subscribe(user => {
-      this.nav.setRoot(TabsPage);
+      this.nav.setRoot(SystemConnectPage);
     });
   }
 

@@ -19,11 +19,11 @@
         <ion-col col-4>Updated:</ion-col>
         <ion-col>{{ updatedDate | date: 'dd/MM/yyyy hh:mma' }}</ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row *ngIf="node.neerby_access_expire_date">
         <ion-col col-4>Expires:</ion-col>
         <ion-col>{{ expireDate | date: 'dd/MM/yyyy hh:mma' }}</ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row *ngIf="node.neerby_access_expire_date">
         <ion-col col-4></ion-col>
         <ion-col>{{ expireInterval }}</ion-col>
       </ion-row>

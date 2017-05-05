@@ -6,7 +6,7 @@
 -->
 <ion-header>
   <ion-navbar>
-    <ion-title>Business Edit Form</ion-title>
+    <ion-title>{{ pageTitle }}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -33,9 +33,9 @@
         <ion-input type="tel" formControlName="phone"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label fixed>Coordinates</ion-label>
-        <ion-input type="tel" formControlName="latitude" placeholder="Latitude"></ion-input>
-        <ion-input type="tel" formControlName="longitude" placeholder="Longitude"></ion-input>
+        <ion-label fixed>Location</ion-label>
+        <button ion-button block (click)="setLocation()">Set current location</button>
+        <div class="map"></div>
       </ion-item>
       <div padding>
         <button ion-button [disabled]="!form.valid" type="submit" color="primary" block>{{ buttonText }}</button>

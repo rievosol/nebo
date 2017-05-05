@@ -22,11 +22,11 @@
       </button>
     </ion-fab>
     
-    <div class="announcements" *ngIf="announcements.length">
+    <div class="announcements" *ngIf="announcements.nodes.length">
       <ion-card>
         <ion-list>
           <ion-item-divider color="primary">NEW ANNOUNCEMENTS</ion-item-divider>
-          <button ion-item *ngFor="let item of announcements" (click)="itemSelected(item)">
+          <button ion-item *ngFor="let item of announcements.nodes" (click)="itemSelected(item)">
             <ion-thumbnail item-left>
               <img src="{{ item.image }}">
             </ion-thumbnail>
@@ -38,11 +38,11 @@
       </ion-card>
     </div>
 
-    <div class="events" *ngIf="events.length">
+    <div class="events" *ngIf="events.nodes.length">
       <ion-card>
         <ion-list>
           <ion-item-divider color="primary">UPCOMING EVENTS</ion-item-divider>
-          <button ion-item class="my-item" *ngFor="let item of events" (click)="itemSelected(item)">
+          <button ion-item class="my-item" *ngFor="let item of events.nodes" (click)="itemSelected(item)">
             <ion-thumbnail item-left>
               <img src="{{ item.image }}">
             </ion-thumbnail>

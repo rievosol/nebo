@@ -5,14 +5,53 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>myFavorites</ion-title>
+    <ion-title>My Favorites</ion-title>
   </ion-navbar>
-
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="activeType">
+      <ion-segment-button value="business" (ionSelect)="segmentSelected('business')">
+        Business
+      </ion-segment-button>
+      <ion-segment-button value="organization" (ionSelect)="segmentSelected('organization')">
+        Organization
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
-
-<ion-content padding>
-
+<ion-content [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <div [ngSwitch]="activeType">
+      <div *ngSwitchCase="'business'">
+        <ion-list>
+          <button ion-item *ngFor="let item of items.business" (click)="itemSelected(item)">
+            <ion-thumbnail item-left>
+              <img src="{{ item.image.src }}">
+            </ion-thumbnail>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.typeText }}</p>
+          </button>
+        </ion-list>
+        <ion-infinite-scroll (ionInfinite)="doInfinite($event, 'business')">
+          <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </div>
+      <div *ngSwitchCase="'organization'">
+        <ion-list>
+          <button ion-item *ngFor="let item of items.organization" (click)="itemSelected(item)">
+            <ion-thumbnail item-left>
+              <img src="{{ item.image.src }}">
+            </ion-thumbnail>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.typeText }}</p>
+          </button>
+        </ion-list>
+        <ion-infinite-scroll (ionInfinite)="doInfinite($event, 'organization')">
+          <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </div>
+    </div>
+  </div>
 </ion-content>

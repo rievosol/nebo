@@ -7,7 +7,7 @@ import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
 import { EventDetailPage } from '../event-detail/event-detail';
 import { ModalMapPage } from '../modal-map/modal-map';
-import { MoreOptionsPopoverPage } from '../more-options-popover/more-options-popover';
+import { MoreInfoPopoverPage } from '../more-info-popover/more-info-popover';
 import { GalleryPage } from '../gallery/gallery';
 
 import { NodeService } from '../../providers/node-service';
@@ -217,10 +217,9 @@ export class BusinessDetailPage {
     map.present();
   }
 
-  showMorePopover(ev) {
-    let popover = this.popoverCtrl.create(MoreOptionsPopoverPage, {
-      canEdit: this.canEdit,
-      nid: this._nid
+  viewMoreInfo(ev) {
+    let popover = this.popoverCtrl.create(MoreInfoPopoverPage, {
+      node: this.node
     });
     popover.present({
       ev: ev

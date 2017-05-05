@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { Http } from '@angular/http';
 
-import { Api } from '../../providers/api';
 import { ViewsService } from '../../providers/views-service';
 import { BusinessDetailPage } from '../business-detail/business-detail';
 
@@ -19,19 +17,19 @@ import { BusinessDetailPage } from '../business-detail/business-detail';
 export class BrowseBusinessPage {
 
   items: any[] = [];
-  url: string = this.api.url + '/testing-business-listing.json';
   state: string = 'loading';
+  viewData: any = {};
+  viewPath: string = 'browse.business';
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              public http: Http,
-              public api: Api,
               public views: ViewsService) {}
 
   ionViewDidLoad() {
-    this.views.getView('browse.business')
-      .subscribe(nodes => {
-        this.items = nodes;
+    this.views.getView(this.viewPath)
+      .subscribe(res => {
+        this.items = res.nodes;
+        this.viewData = res.view;
         this.state = 'loaded';
       });
   }
@@ -40,6 +38,21 @@ export class BrowseBusinessPage {
     this.navCtrl.push(BusinessDetailPage, {
       nid: item.nid,
       title: item.title
+    });
+  }
+
+  doInfinite(infiniteScroll) {
+    this.views.getView(this.viewPath, {
+      data: this.viewData,
+      scroll: infiniteScroll
+    })
+    .subscribe(res => {
+      if (res.nodes && res.nodes.length) {
+        this.viewData = res.view;
+        for (let i = 0; i < res.nodes.length; i++) {
+          this.items.push(res.nodes[i]);
+        }
+      }
     });
   }
 

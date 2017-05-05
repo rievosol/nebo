@@ -26,22 +26,53 @@ export class ViewsService {
         promotion: base + '/highlights-promotion.json'
       },
       browse: {
-        business: base + '/testing-business-listing.json' // testing
+        business: base + '/testing-business-listing.json', // testing
+        organization: base + '/testing-organization-listing.json'
+      },
+      favorites: {
+        business: base + '/favorites-business.json',
+        organization: base + '/favorites-organization.json',
+        all: base + '/favorites-all.json'
       },
       og: {
         audienceOptions: base + '/og-group-audience-options.json'
+      },
+      user: {
+        ownContent: base + '/users-contents.json'
       }
     };
   }
 
-  getView(path: string) {
+  getView(path: string, options?: any) {
     let url = this.getUrl(path);
     if (url) {
-      return this.http.get(url)
-        .map(res => {
-          let data = res.json();
-          return data.nodes;
-        });
+      if (options) {
+        // There's more, so get them.
+        if (options.data && options.data.pages && ((options.data.page + 1) < options.data.pages)) {
+          url += '?page=' + (options.data.page + 1);
+          return this.http.get(url)
+            .map(res => {
+              options.scroll.complete();
+              let result = res.json();
+              // Reach the end of data
+              if (result.view.page + 1 == result.view.pages) {
+                options.scroll.enable(false);
+              }
+              return result;
+            });
+        }
+        // No more to get, so disable the infinite scroll.
+        else {
+          options.scroll.enable(false);
+          return Observable.of({ done: true });
+        }
+      }
+      // This is the first time call.
+      else {
+        return this.http.get(url)
+          .map(res => res.json());
+      }
+      
     }
     return Observable.throw('invalid path');
   }
@@ -50,9 +81,9 @@ export class ViewsService {
     let streams = [];
     for (let i = 0; i < pathObj.length; i++) {
       let stream = this.getView(pathObj[i].path)
-        .map(nodes => {
+        .map(data => {
           let res = {};
-          res[pathObj[i].key] = nodes;
+          res[pathObj[i].key] = data;
           return res;
         });
       streams.push(stream);

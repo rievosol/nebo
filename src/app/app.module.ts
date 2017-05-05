@@ -1,3 +1,5 @@
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpModule } from '@angular/http';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { RequestOptions } from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
@@ -24,6 +26,7 @@ import { AnnouncementDetailPage } from '../pages/announcement-detail/announcemen
 import { EventDetailPage } from '../pages/event-detail/event-detail';
 import { PromotionDetailPage } from '../pages/promotion-detail/promotion-detail';
 import { ModalMapPage } from '../pages/modal-map/modal-map';
+import { ModalGeolocation } from '../pages/modal-geolocation/modal-geolocation';
 import { MoreOptionsPopoverPage } from '../pages/more-options-popover/more-options-popover';
 import { MoreInfoPopoverPage } from '../pages/more-info-popover/more-info-popover';
 import { GalleryPage } from '../pages/gallery/gallery';
@@ -37,6 +40,7 @@ import { FlagService } from '../providers/flag-service';
 import { ViewsService } from '../providers/views-service';
 import { Neerby } from '../providers/neerby';
 import { Util } from '../providers/util';
+import { GeolocationService } from '../providers/geolocation-service';
 
 import { NeboLoadingSpinner } from '../components/nebo-loading-spinner/nebo-loading-spinner';
 
@@ -66,6 +70,7 @@ let pages = [
   EventDetailPage,
   PromotionDetailPage,
   ModalMapPage,
+  ModalGeolocation,
   MoreOptionsPopoverPage,
   MoreInfoPopoverPage,
   GalleryPage,
@@ -90,6 +95,7 @@ export function providers() {
     ViewsService,
     Neerby,
     Util,
+    GeolocationService,
     StatusBar,
     SplashScreen,
     { provide: RequestOptions, useClass: DefaultRequestOptions },
@@ -104,7 +110,9 @@ export function providers() {
       tabsHideOnSubPages: true,
       tabsPlacement: 'top',
       tabsHighlight: true
-    })
+    }),
+    BrowserModule,
+    HttpModule
   ],
   bootstrap: [IonicApp],
   entryComponents: entryComponents(),

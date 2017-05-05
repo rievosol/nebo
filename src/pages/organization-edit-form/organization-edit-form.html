@@ -5,14 +5,42 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>organizationEditForm</ion-title>
+    <ion-title>{{ pageTitle }}</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
-<ion-content padding>
-
+<ion-content padding [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <ion-item>
+        <ion-label floating>Title</ion-label>
+        <ion-input type="text" formControlName="title"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Description</ion-label>
+        <ion-textarea formControlName="body"></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label>Category</ion-label>
+        <ion-select formControlName="category">
+          <ion-option *ngFor="let option of categoryOptions" value="{{option.tid}}">{{option.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Phone</ion-label>
+        <ion-input type="tel" formControlName="phone"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label fixed>Coordinates</ion-label>
+        <ion-input type="tel" formControlName="latitude" placeholder="Latitude"></ion-input>
+        <ion-input type="tel" formControlName="longitude" placeholder="Longitude"></ion-input>
+      </ion-item>
+      <div padding>
+        <button ion-button [disabled]="!form.valid" type="submit" color="primary" block>{{ buttonText }}</button>
+      </div>
+    </form>
+  </div>
 </ion-content>

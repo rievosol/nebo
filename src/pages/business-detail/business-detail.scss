@@ -31,6 +31,7 @@ page-business-detail {
 
   .profile {
     background-color: #fff;
+    position: relative;
 
     ion-thumbnail {
       img {
@@ -43,6 +44,10 @@ page-business-detail {
       margin: 2px 5px 2px 0;
     }
 
+    ion-label {
+      margin-right: 22px;
+    }
+
     .subtitle {
       margin-top: 15px;
       font-size: small;
@@ -53,6 +58,13 @@ page-business-detail {
           bottom: 2px;
         }
       }
+    }
+
+    .more-button {
+      position: absolute;
+      right: 0;
+      top: 3px;
+      z-index: 10;
     }
   }
 

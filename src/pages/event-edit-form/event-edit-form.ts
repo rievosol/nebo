@@ -24,6 +24,7 @@ export class EventEditFormPage {
   public buttonText: string;
   public pageTitle: string;
   public groupOptions: any[];
+  viewPath: string = 'og.audienceOptions';
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -52,9 +53,9 @@ export class EventEditFormPage {
   }
 
   ionViewDidLoad() {
-    let stream = this.views.getView('og.audienceOptions')
-      .map(options => {
-        this.groupOptions = options;
+    let stream = this.views.getView(this.viewPath)
+      .map(res => {
+        this.groupOptions = res.nodes;
       });
 
     if (this.nid) {

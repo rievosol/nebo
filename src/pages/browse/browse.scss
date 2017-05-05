@@ -1,3 +1,9 @@
 page-browse {
+  .scrollable {
+    width: auto;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
 
 }

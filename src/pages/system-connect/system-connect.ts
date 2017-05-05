@@ -18,6 +18,8 @@ import { TabsPage } from '../tabs/tabs';
 })
 export class SystemConnectPage {
 
+  action: string;
+
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public api: Api,
@@ -25,7 +27,8 @@ export class SystemConnectPage {
               public taxonomy: Taxonomy,
               public alertCtrl: AlertController) {}
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
+    this.action = 'Connecting. Please wait.';
     this.api.connect().subscribe(data => {
       console.log(data);
       if (data.error) {
@@ -61,6 +64,7 @@ export class SystemConnectPage {
         }
         let alert = this.alertCtrl.create(alertOptions);
         alert.present();
+        this.action = 'Connection failed.';
       }
       else {
         this.user.bootstrap();
@@ -75,6 +79,7 @@ export class SystemConnectPage {
         buttons: ['OK']
       });
       alert.present();
+      this.action = 'Connection failed';
     });
   }
 

@@ -31,9 +31,10 @@ export class MoreInfoPopoverPage {
     this.createdDate = new Date(createdTimestamp * 1000);
     let updatedTimestamp = parseInt(this.node.changed);
     this.updatedDate = new Date(updatedTimestamp * 1000);
-    let expireTimestamp = parseInt(this.node.neerby_access_expire_date);
-    this.expireDate = new Date(expireTimestamp * 1000);
-    this.expireInterval = this.node.neerby_access_expire_date_interval;
+    if (this.node.neerby_access_expire_date) {
+      this.expireDate = new Date(parseInt(this.node.neerby_access_expire_date) * 1000);
+      this.expireInterval = this.node.neerby_access_expire_date_interval;
+    }
   }
 
 }

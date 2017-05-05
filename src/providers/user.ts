@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { MenuController, ToastController } from 'ionic-angular';
+import { MenuController, ToastController, LoadingController } from 'ionic-angular';
 
 import { Api } from './api';
 
@@ -21,7 +21,8 @@ export class User {
   constructor(public http: Http,
               public api: Api,
               public menuCtrl: MenuController,
-              public toastCtrl: ToastController) {
+              public toastCtrl: ToastController,
+              public loadingCtrl: LoadingController) {
   }
 
   bootstrap() {
@@ -32,6 +33,9 @@ export class User {
   }
 
   login(account: any) {
+    let loading = this.loadingCtrl.create();
+    loading.present();
+
     return this.api.getToken()
       .flatMap(token => {
         return this.userLogin(account, token);
@@ -47,6 +51,7 @@ export class User {
           position: 'bottom'
         });
         toast.present();
+        loading.dismiss();
         return Observable.of(data.user);
       });
   }
@@ -82,6 +87,9 @@ export class User {
   }
 
   logout() {
+    let loading = this.loadingCtrl.create();
+    loading.present();
+
     return this.api.getToken()
       .flatMap(token => {
         return this.userLogout(token);
@@ -97,6 +105,7 @@ export class User {
           position: 'bottom'
         });
         toast.present();
+        loading.dismiss();
         return Observable.of(data.user);
       });
   }

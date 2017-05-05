@@ -5,14 +5,26 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
     <ion-title>My Content</ion-title>
   </ion-navbar>
-
 </ion-header>
 
-
-<ion-content padding>
-  <p>This is page My Content.</p>
+<ion-content [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <ion-list>
+      <button ion-item *ngFor="let item of items" (click)="itemSelected(item)">
+        <h2>{{ item.title }}</h2>
+        <h3>{{ item.typeText }}</h3>
+        <p>{{ item.content }}</p>
+        <ion-note item-right>
+          {{ item.status }}
+        </ion-note>
+      </button>
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
 </ion-content>

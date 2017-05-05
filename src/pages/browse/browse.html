@@ -22,6 +22,8 @@
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
-  <button ion-button round clear [navPush]="gotoBusiness">Business</button>
-  <button ion-button round clear [navPush]="gotoOrganization">Organization</button>
+  <div class="scrollable">
+    <button ion-button round [navPush]="gotoBusiness">Business</button>
+    <button ion-button round [navPush]="gotoOrganization">Organization</button>
+  </div>
 </ion-content>

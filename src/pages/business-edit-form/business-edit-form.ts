@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ModalController } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
 import { Api } from '../../providers/api';
 import { Taxonomy } from '../../providers/taxonomy';
+import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
 
 import 'rxjs/add/operator/map';
 
@@ -26,13 +27,15 @@ export class BusinessEditFormPage {
   public pageTitle: string;
   public categoryOptions: any[];
   public state: string;
+  position: any = {};
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public fb: FormBuilder,
               public nodeService: NodeService,
               public api: Api,
-              public taxonomy: Taxonomy) {
+              public taxonomy: Taxonomy,
+              public modalCtrl: ModalController) {
     
     this.form = this.fb.group({
       title: ['', Validators.required],
@@ -51,46 +54,47 @@ export class BusinessEditFormPage {
   }
 
   ionViewDidLoad() {
+    let stream = this.taxonomy.getTerms({
+      parameters: {
+        vid: this.taxonomy.getVid(this.api.systemData.field_info_fields.field_category_business.settings.allowed_values[0].vocabulary)
+      }
+    })
+    .map(terms => {
+      this.categoryOptions = terms;
+    });
+
     if (this.nid) {
       this.action = 'update';
       this.buttonText = 'Update';
       this.pageTitle = 'Update Business';
 
-      this.nodeService.load(this.nid)
-        .flatMap(node => {
-          let vocab = this.api.systemData.field_info_fields.field_category_business.settings.allowed_values[0].vocabulary;
-          let query = {
-            parameters: {
-              vid: this.taxonomy.getVid(vocab)
-            }
-          };
-          return this.taxonomy.getTerms(query)
-            .map(terms => {
-              this.categoryOptions = terms;
-              return node;
-            });
-        })
-        .subscribe(node => {
-          this.form.controls['title'].setValue(node.title);
+      stream.flatMap(() => {
+        return this.nodeService.load(this.nid)
+          .map(node => {
+            this.form.controls['title'].setValue(node.title);
 
-          let body = node.body.und ? node.body.und[0].value : '';
-          this.form.controls['body'].setValue(body);
+            let body = node.body.und ? node.body.und[0].value : '';
+            this.form.controls['body'].setValue(body);
 
-          let category = node.field_category_business.und ? node.field_category_business.und[0].tid : '';
-          this.form.controls['category'].setValue(category);
+            let category = node.field_category_business.und ? node.field_category_business.und[0].tid : '';
+            this.form.controls['category'].setValue(category);
 
-          let phone = node.field_phone.und ? node.field_phone.und[0].value : '';
-          this.form.controls['phone'].setValue(phone);
+            let phone = node.field_phone.und ? node.field_phone.und[0].value : '';
+            this.form.controls['phone'].setValue(phone);
 
-          let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
-          this.form.controls['latitude'].setValue(position.lat);
-          this.form.controls['longitude'].setValue(position.lon);
-
-          this.state = 'loaded';
-        });
+            let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
+            this.form.controls['latitude'].setValue(position.lat);
+            this.form.controls['longitude'].setValue(position.lon);
+          });
+      })
+      .subscribe(() => {
+        this.state = 'loaded';
+      });
     }
     else {
-      this.state = 'loaded';
+      stream.subscribe(() => {
+        this.state = 'loaded';
+      });
     }
   }
 
@@ -109,7 +113,12 @@ export class BusinessEditFormPage {
         und: [{ value: input.phone }]
       },
       field_position: {
-        und: [{ geom: { lat: input.latitude, lon: input.longitude }}]
+        und: [{ 
+          geom: { 
+            lat: this.position.latitude || '', 
+            lon: this.position.longitude || ''
+          }
+        }]
       }
     };
 
@@ -120,5 +129,15 @@ export class BusinessEditFormPage {
     this.nodeService.save(node).subscribe(data => {
       this.navCtrl.pop();
     });
+  }
+
+  setLocation() {
+    let modal = this.modalCtrl.create(ModalGeolocation);
+    modal.onDidDismiss(position => {
+      if (position) {
+        this.position = position;
+      }
+    });
+    modal.present();
   }
 }

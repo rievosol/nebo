@@ -5,14 +5,26 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
     <ion-title>Organizations</ion-title>
   </ion-navbar>
-
 </ion-header>
 
-
-<ion-content padding>
-
+<ion-content [ngSwitch]="state">
+  <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
+  <div *ngSwitchCase="'loaded'">
+    <ion-list>
+      <button ion-item *ngFor="let item of items" (click)="itemSelected(item)">
+        <ion-thumbnail item-left>
+          <img src="{{ item.image.src }}">
+        </ion-thumbnail>
+        <h2>{{ item.title }}</h2>
+        <h3>{{ item.category }}</h3>
+        <p>{{ item.desc }}</p>
+      </button>
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
 </ion-content>
