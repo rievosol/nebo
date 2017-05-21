@@ -3,6 +3,7 @@ import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { Api } from '../../providers/api';
 import { User } from '../../providers/user';
 import { Taxonomy } from '../../providers/taxonomy';
+import { GeolocationService } from '../../providers/geolocation-service';
 
 import { TabsPage } from '../tabs/tabs';
 
@@ -25,7 +26,8 @@ export class SystemConnectPage {
               public api: Api,
               public user: User,
               public taxonomy: Taxonomy,
-              public alertCtrl: AlertController) {}
+              public alertCtrl: AlertController,
+              public geolocationService: GeolocationService) {}
 
   ionViewDidEnter() {
     this.action = 'Connecting. Please wait.';
@@ -67,8 +69,10 @@ export class SystemConnectPage {
         this.action = 'Connection failed.';
       }
       else {
+        // Successful connection
         this.user.bootstrap();
         this.taxonomy.bootstrap();
+        this.geolocationService.start();
         this.navCtrl.setRoot(TabsPage, null, {animate: true, direction: 'forward'});
       }
     },

@@ -13,6 +13,7 @@ import 'rxjs/add/observable/of';
 @Injectable()
 export class Api {
   
+  localhost: string;
   url: string;
   serviceUrl: string;
   tokenUrl: string;
@@ -20,7 +21,8 @@ export class Api {
   systemData: any;
 
   constructor(public http: Http) {
-    this.url = 'http://localhost/nebo';
+    this.localhost = window['cordova'] ? 'http://192.168.56.1' : 'http://localhost';
+    this.url = this.localhost + '/nebo';
     this.serviceUrl = this.url + '/drupalgap';
     this.tokenUrl = this.url + '/services/session/token';
     this.systemConnectUrl = this.serviceUrl + '/system/connect';

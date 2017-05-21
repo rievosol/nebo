@@ -36,7 +36,7 @@ export class LoginPage {
     };
     this.user.login(account).subscribe(user => {
       this.navCtrl.setRoot(TabsPage);
-    })
+    });
   }
 
 }

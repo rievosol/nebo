@@ -10,11 +10,10 @@
   </ion-navbar>
 </ion-header>
 
-
 <ion-content padding [ngSwitch]="state">
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
-    <form [formGroup]="form" (ngSubmit)="save()">
+    <form [formGroup]="form">
       <ion-item>
         <ion-label floating>Title</ion-label>
         <ion-input type="text" formControlName="title"></ion-input>
@@ -33,14 +32,17 @@
         <ion-label floating>Phone</ion-label>
         <ion-input type="tel" formControlName="phone"></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label fixed>Coordinates</ion-label>
-        <ion-input type="tel" formControlName="latitude" placeholder="Latitude"></ion-input>
-        <ion-input type="tel" formControlName="longitude" placeholder="Longitude"></ion-input>
-      </ion-item>
       <div padding>
-        <button ion-button [disabled]="!form.valid" type="submit" color="primary" block>{{ buttonText }}</button>
+        <ion-label fixed>Location</ion-label>
+        <button ion-button block (click)="setLocation()">Get current location</button>
+        <div class="map"></div>
       </div>
     </form>
   </div>
 </ion-content>
+
+<ion-footer *ngIf="state == 'loaded'">
+  <ion-toolbar color="primary">
+    <button ion-button [disabled]="!form.valid" full clear color="light" (click)="save()">{{ buttonText }}</button>
+  </ion-toolbar>
+</ion-footer>

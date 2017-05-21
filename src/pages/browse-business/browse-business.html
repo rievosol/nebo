@@ -11,6 +11,9 @@
 </ion-header>
 
 <ion-content [ngSwitch]="state">
+  <ion-refresher (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
     <ion-list>
@@ -18,7 +21,12 @@
         <ion-thumbnail item-left>
           <img src="{{ item.image.src }}">
         </ion-thumbnail>
-        <h2>{{ item.title }}</h2>
+        <h2>
+          {{ item.title }}
+          <span *ngIf="item.favorited">
+            <ion-icon name="heart" color="primary" small></ion-icon>
+          </span>
+        </h2>
         <h3>{{ item.category }}</h3>
         <p>{{ item.desc }}</p>
       </button>

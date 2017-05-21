@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { NavController, NavParams } from 'ionic-angular';
+import { Content, NavController, NavParams } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
 import { ViewsService } from '../../providers/views-service';
 import { Neerby } from '../../providers/neerby';
@@ -20,8 +20,10 @@ import 'rxjs/add/operator/mergeMap';
 })
 export class AnnouncementEditFormPage {
 
+  @ViewChild(Content) content: Content;
+
   private nid: number;
-  private announcementEdit: FormGroup;
+  private form: FormGroup;
   public action: string;
   public buttonText: string;
   public pageTitle: string;
@@ -35,7 +37,7 @@ export class AnnouncementEditFormPage {
               public nodeService: NodeService,
               public views: ViewsService,
               public neerby: Neerby) {
-    this.announcementEdit = this.fb.group({
+    this.form = this.fb.group({
       title: ['', Validators.required],
       body: ['', Validators.required],
       group: ['', Validators.required],
@@ -62,27 +64,31 @@ export class AnnouncementEditFormPage {
       stream.flatMap(() => {
         return this.nodeService.load(this.nid)
           .map(node => {
-            this.state = 'loaded';
-            this.announcementEdit.controls['title'].setValue(node.title);
+            this.form.controls['title'].setValue(node.title);
 
             let body = node.body.und ? node.body.und[0].value : '';
-            this.announcementEdit.controls['body'].setValue(body);
+            this.form.controls['body'].setValue(body);
 
             let group = node.og_group_ref.und ? node.og_group_ref.und[0].target_id : '';
-            this.announcementEdit.controls['group'].setValue(group);
+            this.form.controls['group'].setValue(group);
           });
       })
-      .subscribe();
+      .subscribe(() => {
+        this.state = 'loaded';
+        this.content.resize();
+      });
     }
     else {
-      this.state = 'loaded';
-      this.announcementEdit.controls['publishPeriod'].setValidators(Validators.required);
-      stream.subscribe();
+      this.form.controls['publishPeriod'].setValidators(Validators.required);
+      stream.subscribe(() => {
+        this.state = 'loaded';
+        this.content.resize();
+      });
     }
   }
 
   save() {
-    let input = this.announcementEdit.value;
+    let input = this.form.value;
     let node: any = {
       type: 'announcement',
       title: input.title,

@@ -13,7 +13,7 @@
 <ion-content padding [ngSwitch]="state">
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
-    <form [formGroup]="announcementEdit" (ngSubmit)="save()">
+    <form [formGroup]="form">
       <ion-item>
         <ion-label floating>Title</ion-label>
         <ion-input type="text" formControlName="title"></ion-input>
@@ -34,9 +34,12 @@
           <ion-option *ngFor="let option of neerby.periodOptionsWD" value="{{ option.period }}">{{ option.label }}</ion-option>
         </ion-select>
       </ion-item>
-      <div padding>
-        <button ion-button [disabled]="!announcementEdit.valid" type="submit" color="primary" block>{{ buttonText }}</button>
-      </div>
     </form>
   </div>
 </ion-content>
+
+<ion-footer *ngIf="state == 'loaded'">
+  <ion-toolbar color="primary">
+    <button ion-button [disabled]="!form.valid" full clear color="light" (click)="save()">{{ buttonText }}</button>
+  </ion-toolbar>
+</ion-footer>

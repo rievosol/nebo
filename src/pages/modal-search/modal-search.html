@@ -1,0 +1,32 @@
+<!--
+  Generated template for the ModalSearch page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+  </ion-navbar>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-2>
+          <button ion-button icon-only clear (click)="dismiss()">
+            <ion-icon name="arrow-back"></ion-icon>
+          </button>
+        </ion-col>
+        <ion-col>
+          <ion-searchbar (ionInput)="suggest($event)"></ion-searchbar>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <button ion-item *ngFor="let item of items" (click)="searchTerm(item)">
+      {{ item.title }}
+    </button>
+  </ion-list>
+</ion-content>

@@ -39,4 +39,6 @@
     <plugin name="cordova-plugin-geolocation" spec="~2.4.3" />
     <plugin name="cordova-plugin-camera" spec="~2.4.1" />
     <plugin name="cordova-plugin-vibration" spec="~2.1.5" />
+    <plugin name="cordova-plugin-file" spec="~4.3.3" />
+    <plugin name="cordova-plugin-filepath" spec="~1.0.2" />
 </widget>

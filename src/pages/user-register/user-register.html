@@ -1,0 +1,37 @@
+<!--
+  Generated template for the UserRegister page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Register</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="form" (ngSubmit)="register()">
+    <ion-list>
+      <ion-item>
+        <ion-label fixed>Username</ion-label>
+        <ion-input type="text" formControlName="username"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label fixed>Password</ion-label>
+        <ion-input type="password" formControlName="password1"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label fixed>Retype Password</ion-label>
+        <ion-input type="password" formControlName="password2"></ion-input>
+      </ion-item>
+
+      <div padding>
+        <button ion-button color="primary" type="submit" block>Login</button>
+      </div>
+
+    </ion-list>
+  </form>
+</ion-content>

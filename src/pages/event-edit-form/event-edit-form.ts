@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { NavController, NavParams } from 'ionic-angular';
+import { Content, NavController, NavParams, ModalController } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
 import { ViewsService } from '../../providers/views-service';
 import { Neerby } from '../../providers/neerby';
+import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
 
 /*
   Generated class for the EventEditForm page.
@@ -17,6 +18,8 @@ import { Neerby } from '../../providers/neerby';
 })
 export class EventEditFormPage {
 
+  @ViewChild(Content) content: Content;
+
   private nid: number;
   private form: FormGroup;
   public state: string;
@@ -25,13 +28,15 @@ export class EventEditFormPage {
   public pageTitle: string;
   public groupOptions: any[];
   viewPath: string = 'og.audienceOptions';
+  public position: any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public fb: FormBuilder,
               public nodeService: NodeService,
               public views: ViewsService,
-              public neerby: Neerby) {
+              public neerby: Neerby,
+              public modalCtrl: ModalController) {
     let now = this.toLocalIso(new Date().toISOString());
     this.form = fb.group({
       title: ['', Validators.required],
@@ -65,7 +70,6 @@ export class EventEditFormPage {
       stream.flatMap(() => {
         return this.nodeService.load(this.nid)
           .map(node => {
-            this.state = 'loaded';
             this.form.controls['title'].setValue(node.title);
             
             let body = node.body.und ? node.body.und[0].value : '';
@@ -86,18 +90,21 @@ export class EventEditFormPage {
             this.form.controls['phone'].setValue(phone);
             
             let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
-            this.form.controls['latitude'].setValue(position.lat);
-            this.form.controls['longitude'].setValue(position.lon);
-            
+            this.position = {
+              latitude: position.lat,
+              longitude: position.lon
+            };
           });
       })
       .subscribe(() => {
         this.state = 'loaded';
+        this.content.resize();
       });
     }
     else {
       stream.subscribe(() => {
-          this.state = 'loaded';
+        this.state = 'loaded';
+        this.content.resize();
       });
     }
 
@@ -120,7 +127,7 @@ export class EventEditFormPage {
         und: [{ value: input.phone }]
       },
       field_position: {
-        und: [{ geom: { lat: input.latitude, lon: input.longitude }}]
+        und: [{ geom: { lat: this.position.latitude, lon: this.position.longitude }}]
       },
       field_date: {
         und: [{
@@ -179,6 +186,17 @@ export class EventEditFormPage {
     let o = new Date().getTimezoneOffset() * 60000;
     let _date = new Date(new Date(date).getTime() - o).toISOString();
     return _date.slice(0, -1);
+  }
+
+  setLocation() {
+    let modal = this.modalCtrl.create(ModalGeolocation);
+    modal.onDidDismiss(position => {
+      if (position) {
+        console.log(position);
+        this.position = position.data;
+      }
+    });
+    modal.present();
   }
 
 }

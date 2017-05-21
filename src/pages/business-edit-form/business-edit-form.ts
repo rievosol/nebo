@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { NavController, NavParams, ModalController } from 'ionic-angular';
+import { Content, NavController, NavParams, ModalController, ActionSheetController } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
 import { Api } from '../../providers/api';
 import { Taxonomy } from '../../providers/taxonomy';
+import { CameraService } from '../../providers/camera-service';
 import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
+import { GalleryPage } from '../gallery/gallery';
 
 import 'rxjs/add/operator/map';
 
@@ -19,6 +21,8 @@ import 'rxjs/add/operator/map';
   templateUrl: 'business-edit-form.html'
 })
 export class BusinessEditFormPage {
+
+  @ViewChild(Content) content: Content;
   
   private form: FormGroup;
   private action: string;
@@ -28,6 +32,7 @@ export class BusinessEditFormPage {
   public categoryOptions: any[];
   public state: string;
   position: any = {};
+  images: any[] = [];
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -35,7 +40,9 @@ export class BusinessEditFormPage {
               public nodeService: NodeService,
               public api: Api,
               public taxonomy: Taxonomy,
-              public modalCtrl: ModalController) {
+              public cameraService: CameraService,
+              public modalCtrl: ModalController,
+              public actionSheetCtrl: ActionSheetController) {
     
     this.form = this.fb.group({
       title: ['', Validators.required],
@@ -83,17 +90,21 @@ export class BusinessEditFormPage {
             this.form.controls['phone'].setValue(phone);
 
             let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
-            this.form.controls['latitude'].setValue(position.lat);
-            this.form.controls['longitude'].setValue(position.lon);
+            this.position = {
+              latitude: position.lat,
+              longitude: position.lon
+            };
           });
       })
       .subscribe(() => {
         this.state = 'loaded';
+        this.content.resize();
       });
     }
     else {
       stream.subscribe(() => {
         this.state = 'loaded';
+        this.content.resize();
       });
     }
   }
@@ -133,11 +144,34 @@ export class BusinessEditFormPage {
 
   setLocation() {
     let modal = this.modalCtrl.create(ModalGeolocation);
-    modal.onDidDismiss(position => {
-      if (position) {
-        this.position = position;
+    modal.onDidDismiss(passedData => {
+      if (passedData) {
+        console.log(passedData);
+        this.position = passedData.data;
       }
     });
     modal.present();
   }
+
+  getPictureMethod() {
+    this.cameraService.takePicture().subscribe(file => {
+      this.images.push({ url: file['url'] });
+    });
+  }
+
+  showGallery(index) {
+    index = index || 0;
+    let images = [];
+    for (let image of this.images) {
+      console.log(image);
+      images.push(image);
+    }
+    let gallery = this.modalCtrl.create(GalleryPage, {
+      images: images,
+      start: index
+    });
+    gallery.present();
+  }
+
+
 }

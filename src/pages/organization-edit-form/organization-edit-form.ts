@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { NavController, NavParams } from 'ionic-angular';
+import { Content, NavController, NavParams, ModalController } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
 import { Api } from '../../providers/api';
 import { Taxonomy } from '../../providers/taxonomy';
+import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
 
 /*
   Generated class for the OrganizationEditForm page.
@@ -17,6 +18,8 @@ import { Taxonomy } from '../../providers/taxonomy';
 })
 export class OrganizationEditFormPage {
 
+  @ViewChild(Content) content: Content;
+
   private form: FormGroup;
   private action: string;
   private nid: number;
@@ -24,13 +27,15 @@ export class OrganizationEditFormPage {
   public pageTitle: string;
   public categoryOptions: any[];
   public state: string;
+  public position: any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public fb: FormBuilder,
               public nodeService: NodeService,
               public api: Api,
-              public taxonomy: Taxonomy) {
+              public taxonomy: Taxonomy,
+              public modalCtrl: ModalController) {
     
     this.form = this.fb.group({
       title: ['', Validators.required],
@@ -78,17 +83,21 @@ export class OrganizationEditFormPage {
             this.form.controls['phone'].setValue(phone);
 
             let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
-            this.form.controls['latitude'].setValue(position.lat);
-            this.form.controls['longitude'].setValue(position.lon);
+            this.position = {
+              latitude: position.lat,
+              longitude: position.lon
+            };
           });
       })
       .subscribe(() => {
         this.state = 'loaded';
+        this.content.resize();
       });
     }
     else {
       stream.subscribe(() => {
         this.state = 'loaded';
+        this.content.resize();
       });
     }
   }
@@ -108,7 +117,7 @@ export class OrganizationEditFormPage {
         und: [{ value: input.phone }]
       },
       field_position: {
-        und: [{ geom: { lat: input.latitude, lon: input.longitude }}]
+        und: [{ geom: { lat: this.position.latitude, lon: this.position.longitude }}]
       }
     };
 
@@ -119,6 +128,17 @@ export class OrganizationEditFormPage {
     this.nodeService.save(node).subscribe(data => {
       this.navCtrl.pop();
     });
+  }
+
+  setLocation() {
+    let modal = this.modalCtrl.create(ModalGeolocation);
+    modal.onDidDismiss(position => {
+      if (position) {
+        console.log(position);
+        this.position = position.data;
+      }
+    });
+    modal.present();
   }
 
 }

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { NavController, NavParams, ActionSheetController } from 'ionic-angular';
+import { Component, NgZone } from '@angular/core';
+import { NavController, NavParams, ActionSheetController, ModalController } from 'ionic-angular';
 
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 import { OrganizationEditFormPage } from '../organization-edit-form/organization-edit-form';
@@ -8,9 +8,14 @@ import { EventEditFormPage } from '../event-edit-form/event-edit-form';
 import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
 import { EventDetailPage } from '../event-detail/event-detail';
 import { PromotionDetailPage } from '../promotion-detail/promotion-detail';
+import { SearchResult } from '../search-result/search-result';
+import { ModalMapPage } from '../modal-map/modal-map';
+
 import { ViewsService } from '../../providers/views-service';
 import { Api } from '../../providers/api';
 import { NodeService } from '../../providers/node-service';
+import { GeolocationService } from '../../providers/geolocation-service';
+import { GoogleMaps } from '../../providers/google-maps';
 
 /*
   Generated class for the Highlights page.
@@ -28,14 +33,21 @@ export class HighlightsPage {
   events: any[];
   promotions: any[];
   state: string;
+  canAddContent: boolean = false;
+  location: string;
+  findLocation: string = 'finding';
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public actionSheetCtrl: ActionSheetController,
               public views: ViewsService,
               public api: Api,
-              public nodeService: NodeService) {
-    
+              public nodeService: NodeService,
+              public modalCtrl: ModalController,
+              public geolocation: GeolocationService,
+              public googleMaps: GoogleMaps,
+              private zone: NgZone) {
+    this.canAddContent = this.nodeService.checkPermissionAdd(this.nodeService.getNodeTypes());
   }
 
   ionViewWillEnter() {
@@ -43,6 +55,24 @@ export class HighlightsPage {
   }
 
   ionViewDidEnter() {
+    this.geolocation.getPosition()
+      .flatMap(position => {
+        return this.googleMaps.geocode(position);
+      })
+      .subscribe(names => {
+        this.zone.run(() => {
+          let sublocality = names['sublocality'] ? names['sublocality'] + ', ' : '';
+          this.location = sublocality + names['locality'];
+          this.findLocation = 'found';
+        });
+      });
+
+    this.getContent().subscribe(() => {
+      this.state = 'loaded';
+    });
+  }
+
+  getContent() {
     let opts = [
       {
         key: 'announcement',
@@ -57,43 +87,59 @@ export class HighlightsPage {
         path: 'highlights.promotion'
       }
     ];
-    this.views.getViews(opts).subscribe(res => {
+    return this.views.getViews(opts).map(res => {
       console.log(res);
       this.announcements = res['announcement'];
       this.events = res['event'];
       this.promotions = res['promotion'];
-      this.state = 'loaded';
     });
-
   }
 
   addContent() {
-    let actionSheet = this.actionSheetCtrl.create({
+    let options: any = {
       title: 'Create content',
-      buttons: [
-        {
-          text: 'Business',
-          handler: () => this.navCtrl.push(BusinessEditFormPage)
-        },
-        {
-          text: 'Organization',
-          handler: () => this.navCtrl.push(OrganizationEditFormPage)
-        },
-        {
-          text: 'Announcement',
-          handler: () => this.navCtrl.push(AnnouncementEditFormPage)
-        },
-        {
-          text: 'Event',
-          handler: () => this.navCtrl.push(EventEditFormPage)
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    actionSheet.present();
+      buttons: []
+    };
+    let types = this.nodeService.getNodeTypes('create');
+    for (let i = 0; i < types.length; i++) {
+      switch (types[i]) {
+        case 'business':
+          options.buttons.push({
+            text: 'Business',
+            handler: () => this.navCtrl.push(BusinessEditFormPage)
+          });
+          break;
+
+        case 'organization':
+          options.buttons.push({
+            text: 'Organization',
+            handler: () => this.navCtrl.push(OrganizationEditFormPage)
+          });
+          break;
+
+        case 'announcement':
+          options.buttons.push({
+            text: 'Announcement',
+            handler: () => this.navCtrl.push(AnnouncementEditFormPage)
+          });
+          break;
+
+        case 'event':
+          options.buttons.push({
+            text: 'Event',
+            handler: () => this.navCtrl.push(EventEditFormPage)
+          });
+          break;
+      }
+    }
+    if (options.buttons.length > 0) {
+      options.buttons.push({
+        text: 'Cancel',
+        role: 'cancel'
+      });
+      let actionSheet = this.actionSheetCtrl.create(options);
+      actionSheet.present();
+    }
   }
 
   itemSelected(item) {
@@ -114,6 +160,25 @@ export class HighlightsPage {
         this.navCtrl.push(PromotionDetailPage, params);
         break;
     }
+  }
+
+  search() {
+    this.navCtrl.push(SearchResult);
+  }
+
+  showMap() {
+    let modal = this.modalCtrl.create(ModalMapPage, {
+      lat: this.geolocation.position.latitude,
+      lon: this.geolocation.position.longitude,
+      title: 'Your current location'
+    });
+    modal.present();
+  }
+
+  refresh(refresher) {
+    this.getContent().subscribe(() => {
+      refresher.complete();
+    });
   }
 
 }

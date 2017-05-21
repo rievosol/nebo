@@ -19,7 +19,7 @@
     <button ion-item (click)="getLocation()">
       <ion-icon name="pin" item-left></ion-icon>
       <h2>Get your current location</h2>
-      <p>Accurate to {{ geolocation.position.accuracy }} meters</p>
+      <p *ngIf="geolocationService.position">Accurate to {{ geolocationService.position.accuracy }} meters</p>
     </button>
   </ion-list>
 </ion-content>

@@ -17,7 +17,7 @@ export class ModalGeolocation {
 
   constructor(public navParams: NavParams,
               public viewCtrl: ViewController,
-              public geolocation: GeolocationService) {
+              public geolocationService: GeolocationService) {
 
   }
 
@@ -31,7 +31,7 @@ export class ModalGeolocation {
 
   getLocation() {
     this.viewCtrl.dismiss({
-      data: this.geolocation.position
+      data: this.geolocationService.position
     });
   }
 

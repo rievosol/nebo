@@ -6,6 +6,7 @@
 -->
 <ion-header>
   <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="dismiss()">
         <ion-icon name="close"></ion-icon>
@@ -15,6 +16,5 @@
 </ion-header>
 
 <ion-content>
-  <p>Google map goes here.</p>
-  <p>Position: {{ geo }}</p>
+  <div #map id="map"></div>
 </ion-content>

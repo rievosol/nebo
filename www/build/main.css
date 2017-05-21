@@ -24696,6 +24696,7 @@ page-announcement-detail .profile .title h1 {
   margin-bottom: 0;
   padding-top: 30px;
   padding-bottom: 50px;
+  white-space: normal;
 }
 
 page-announcement-detail .profile .title .more-button {
@@ -24793,6 +24794,10 @@ page-business-detail .profile ion-label {
   margin-right: 22px;
 }
 
+page-business-detail .profile h1.title {
+  white-space: normal;
+}
+
 page-business-detail .profile .subtitle {
   margin-top: 15px;
   font-size: small;
@@ -24846,6 +24851,7 @@ page-event-detail .profile .title h1 {
   margin-bottom: 0;
   padding-top: 30px;
   padding-bottom: 50px;
+  white-space: normal;
 }
 
 page-event-detail .profile .title .more-button {
@@ -24907,12 +24913,17 @@ page-highlights ion-content {
   background-color: #e5e5e5 !important;
 }
 
-page-highlights .card-md .item-md.item-block .item-inner {
-  border-bottom: 1px solid #dedede;
-}
-
 page-highlights .list-md > .item-block:last-child .item-inner {
   border-bottom: 0;
+}
+
+page-highlights .location-card .item-md ion-spinner[item-left] + .item-inner {
+  margin-left: 24px;
+}
+
+page-modal-map #map {
+  width: 100%;
+  height: 100%;
 }
 
 page-more-info-popover ion-item {
@@ -24977,6 +24988,10 @@ page-organization-detail .profile ion-thumbnail img {
 
 page-organization-detail .profile ion-icon {
   margin: 2px 5px 2px 0;
+}
+
+page-organization-detail .profile h1.title {
+  white-space: normal;
 }
 
 page-organization-detail .profile .subtitle {

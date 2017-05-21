@@ -39,6 +39,13 @@ export class ViewsService {
       },
       user: {
         ownContent: base + '/users-contents.json'
+      },
+      search: {
+        autocomplete: base + '/nebo-autocomplete.json',
+        nearby: base + '/search-nearby.json'
+      },
+      node: {
+        children: base + '/entity-child-nodes.json'
       }
     };
   }
@@ -46,33 +53,61 @@ export class ViewsService {
   getView(path: string, options?: any) {
     let url = this.getUrl(path);
     if (url) {
+      let proceed = true;
+      let useInfiniteScroll = false;
+      let hasParams = false;
+
       if (options) {
-        // There's more, so get them.
-        if (options.data && options.data.pages && ((options.data.page + 1) < options.data.pages)) {
-          url += '?page=' + (options.data.page + 1);
-          return this.http.get(url)
-            .map(res => {
-              options.scroll.complete();
-              let result = res.json();
-              // Reach the end of data
-              if (result.view.page + 1 == result.view.pages) {
-                options.scroll.enable(false);
-              }
-              return result;
-            });
+        // Using contextual filters
+        if (options.append) {
+          for (let i = 0; i < options.append.length; i++) {
+            url += '/' + options.append[i];
+          }
         }
-        // No more to get, so disable the infinite scroll.
-        else {
-          options.scroll.enable(false);
-          return Observable.of({ done: true });
+        
+        // Using views filters
+        if (options.params && options.params.length > 0) {
+          hasParams = true;
+          url += '?';
+          for (let i = 0; i < options.params.length; i++) {
+            url += options.params[i].key + '=' + options.params[i].value + '&';
+          }
+          url = url.slice(0, -1);
         }
-      }
-      // This is the first time call.
-      else {
-        return this.http.get(url)
-          .map(res => res.json());
+        
+        // Using infinite scroll
+        if (options.data && options.data.pages) {
+          useInfiniteScroll = true;
+          if (options.data.page + 1 < options.data.pages) {
+            url += (hasParams ? '&' : '?') + 'page=' + (options.data.page + 1);
+          }
+          // No more data to fetch.
+          else {
+            if (options.scroll) {
+              options.scroll.enable(false);
+            }
+            proceed = false;
+          }
+        }
       }
       
+      // Done preparing url, so proceed.
+      if (proceed) {
+        return this.http.get(url)
+          .map(res => {
+            let result = res.json();
+            if (useInfiniteScroll) {
+              if (options.scroll) {
+                options.scroll.complete();
+                if (result.view.page + 1 == result.view.pages) {
+                  options.scroll.enable(false);
+                }
+              }
+            }
+            return result;
+          });
+      }
+      return Observable.of({ done: true });
     }
     return Observable.throw('invalid path');
   }

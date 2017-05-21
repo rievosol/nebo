@@ -13,7 +13,7 @@
 <ion-content padding [ngSwitch]="state">
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
-    <form [formGroup]="form" (ngSubmit)="save()">
+    <form [formGroup]="form">
       <ion-item>
         <ion-label floating>Title</ion-label>
         <ion-input type="text" formControlName="title"></ion-input>
@@ -32,14 +32,33 @@
         <ion-label floating>Phone</ion-label>
         <ion-input type="tel" formControlName="phone"></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label fixed>Location</ion-label>
-        <button ion-button block (click)="setLocation()">Set current location</button>
-        <div class="map"></div>
-      </ion-item>
       <div padding>
-        <button ion-button [disabled]="!form.valid" type="submit" color="primary" block>{{ buttonText }}</button>
+        <ion-label fixed>Location</ion-label>
+        <button ion-button block (click)="setLocation()">Get current location</button>
+        <div class="map"></div>
+      </div>
+      <div padding>
+        <ion-label fixed>Pictures</ion-label>
+        <div class="gallery" *ngIf="images.length">
+          <ion-list>
+            <ion-item>
+              <ion-thumbnail item-left *ngFor="let image of images; let i = index">
+                <a (click)="showGallery(i)">
+                  <img src="{{ image.url }}">
+                </a>
+              </ion-thumbnail>
+            </ion-item>
+          </ion-list>
+        </div>
+        <button ion-button block (click)="getPictureMethod()">Get pictures</button>
+        <div class="pictures"></div>
       </div>
     </form>
   </div>
 </ion-content>
+
+<ion-footer *ngIf="state == 'loaded'">
+  <ion-toolbar color="primary">
+    <button ion-button [disabled]="!form.valid" full clear color="light" (click)="save()">{{ buttonText }}</button>
+  </ion-toolbar>
+</ion-footer>

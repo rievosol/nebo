@@ -7,6 +7,7 @@ import { MyApp } from './app.component';
 
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
+import { UserRegister } from '../pages/user-register/user-register';
 import { SystemConnectPage } from '../pages/system-connect/system-connect';
 import { HighlightsPage } from '../pages/highlights/highlights';
 import { BrowsePage } from '../pages/browse/browse';
@@ -27,9 +28,11 @@ import { EventDetailPage } from '../pages/event-detail/event-detail';
 import { PromotionDetailPage } from '../pages/promotion-detail/promotion-detail';
 import { ModalMapPage } from '../pages/modal-map/modal-map';
 import { ModalGeolocation } from '../pages/modal-geolocation/modal-geolocation';
+import { ModalSearch } from '../pages/modal-search/modal-search';
 import { MoreOptionsPopoverPage } from '../pages/more-options-popover/more-options-popover';
 import { MoreInfoPopoverPage } from '../pages/more-info-popover/more-info-popover';
 import { GalleryPage } from '../pages/gallery/gallery';
+import { SearchResult } from '../pages/search-result/search-result';
 
 import { Api } from '../providers/api';
 import { User } from '../providers/user';
@@ -41,16 +44,24 @@ import { ViewsService } from '../providers/views-service';
 import { Neerby } from '../providers/neerby';
 import { Util } from '../providers/util';
 import { GeolocationService } from '../providers/geolocation-service';
+import { CameraService } from '../providers/camera-service';
+import { GoogleMaps } from '../providers/google-maps';
 
 import { NeboLoadingSpinner } from '../components/nebo-loading-spinner/nebo-loading-spinner';
+import { NeboSearch } from '../components/nebo-search/nebo-search';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Geolocation } from '@ionic-native/geolocation';
+import { Camera } from '@ionic-native/camera';
+import { File } from '@ionic-native/file';
+import { FilePath } from '@ionic-native/file-path';
 
 let pages = [
   MyApp,
   TabsPage,
   LoginPage,
+  UserRegister,
   SystemConnectPage,
   HighlightsPage,
   BrowsePage,
@@ -71,10 +82,13 @@ let pages = [
   PromotionDetailPage,
   ModalMapPage,
   ModalGeolocation,
+  ModalSearch,
   MoreOptionsPopoverPage,
   MoreInfoPopoverPage,
   GalleryPage,
-  NeboLoadingSpinner
+  SearchResult,
+  NeboLoadingSpinner,
+  NeboSearch
 ];
 
 export function declarations() {
@@ -96,8 +110,14 @@ export function providers() {
     Neerby,
     Util,
     GeolocationService,
+    CameraService,
+    GoogleMaps,
     StatusBar,
     SplashScreen,
+    Geolocation,
+    Camera,
+    File,
+    FilePath,
     { provide: RequestOptions, useClass: DefaultRequestOptions },
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]

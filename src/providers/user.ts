@@ -17,6 +17,7 @@ export class User {
   nodePermissions: any;
   loginUrl: string = this.api.serviceUrl + '/user/login';
   logoutUrl: string = this.api.serviceUrl + '/user/logout';
+  registerUrl: string = this.api.serviceUrl + '/user/register';
   
   constructor(public http: Http,
               public api: Api,
@@ -63,6 +64,39 @@ export class User {
     });
     let options = new RequestOptions({ headers: headers });
     return this.http.post(this.loginUrl, account, options);
+  }
+
+  register(account: any) {
+    let loading = this.loadingCtrl.create();
+    loading.present();
+
+    return this.api.getToken()
+      .flatMap(token => {
+        return this.userRegister(account, token);
+      })
+      .flatMap(() => {
+        return this.api.connect();
+      })
+      .flatMap(data => {
+        this.bootstrap();
+        let toast = this.toastCtrl.create({
+          message: 'Account successfully created',
+          duration: 3000,
+          position: 'bottom'
+        });
+        toast.present();
+        loading.dismiss();
+        return Observable.of(data.user);
+      });
+  }
+
+  private userRegister(account: any, token: string) {
+    let headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': token
+    });
+    let options = new RequestOptions({ headers: headers });
+    return this.http.post(this.registerUrl, account, options);
   }
 
   enableAuthenticatedMenu() {

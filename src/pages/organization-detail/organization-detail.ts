@@ -31,6 +31,7 @@ export class OrganizationDetailPage {
   body: string;
   category: string;
   images: any[] = [];
+  profilePicture: string;
   canEdit: boolean = false;
   phone: string;
   sms: any;
@@ -90,6 +91,7 @@ export class OrganizationDetailPage {
         this.canEdit = this.nodeService.checkPermissionEdit(node);
         this.category = node.field_category_organization.und[0].name;
         this.images = node.field_image.und ? node.field_image.und : [];
+        this.profilePicture = node.field_profile_picture.und ? node.field_profile_picture.und[0].url : '';
         this.phone = node.field_phone.und ? node.field_phone.und[0].value : '';
         this.sms = this.util.sanitize('sms:' + this.phone);
         if (node.field_position.und) {
@@ -213,7 +215,11 @@ export class OrganizationDetailPage {
   }
 
   showMap() {
-    let map = this.modalCtrl.create(ModalMapPage, { geo: this.position.geo });
+    let map = this.modalCtrl.create(ModalMapPage, {
+      lat: this.position.lat,
+      lon: this.position.lon,
+      title: this.title
+    });
     map.present();
   }
 

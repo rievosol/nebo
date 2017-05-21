@@ -7,6 +7,7 @@ import { Api } from '../providers/api';
 import { User } from '../providers/user';
 
 import { LoginPage } from '../pages/login/login';
+import { UserRegister } from '../pages/user-register/user-register';
 import { SystemConnectPage } from '../pages/system-connect/system-connect';
 import { MyAccountPage } from '../pages/my-account/my-account';
 import { MyContentPage } from '../pages/my-content/my-content';
@@ -40,7 +41,8 @@ export class MyApp {
     ];
 
     this.anonPages = [
-      { title: 'Login', component: LoginPage, icon: 'ios-exit-outline' }
+      { title: 'Login', component: LoginPage, icon: 'ios-exit-outline' },
+      { title: 'Register', component: UserRegister, icon: 'ios-exit-outline'}
     ];
 
   }
