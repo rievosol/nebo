@@ -31,27 +31,69 @@
       </ion-item>
       <ion-item>
         <ion-label>Date start</ion-label>
-        <ion-datetime displayFormat="DDD D/M/YYYY h:mm A" pickerFormat="D/MMM/YYYY h:mm A" formControlName="start"></ion-datetime>
+        <ion-datetime displayFormat="DDD D/M/YYYY h:mm A" formControlName="start" [min]="minDate" (ionChange)="updateDate($event, 'start')"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label>Date finish</ion-label>
-        <ion-datetime displayFormat="DDD D/M/YYYY h:mm A" pickerFormat="D/MMM/YYYY h:mm A" formControlName="finish"></ion-datetime>
+        <ion-datetime displayFormat="DDD D/M/YYYY h:mm A" formControlName="finish" [min]="minFinishDate" (ionChange)="updateDate($event, 'finish')"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label floating>Phone</ion-label>
         <ion-input type="tel" formControlName="phone"></ion-input>
       </ion-item>
-      <div padding>
-        <ion-label fixed>Location</ion-label>
-        <button ion-button block (click)="setLocation()">Get current location</button>
-        <div class="map"></div>
-      </div>
       <ion-item *ngIf="action == 'create'">
         <ion-label>Publish period (expire)</ion-label>
         <ion-select formControlName="publishPeriod">
           <ion-option *ngFor="let option of neerby.periodOptionsWD" value="{{ option.period }}">{{ option.label }}</ion-option>
         </ion-select>
       </ion-item>
+      <div padding>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label fixed>Location</ion-label>
+            </ion-col>
+            <ion-col text-right>
+              <button ion-button (click)="setLocation()">{{ addLocationBtn }}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-card *ngIf="position">
+          <div id="map" #map></div>
+          <ion-item>
+            <ion-icon name="pin" item-left></ion-icon>
+            <h2>{{ locationName }}</h2>
+            <p>{{ geoPoint }}</p>
+          </ion-item>
+          <button ion-item *ngIf="newLocationIsSet" (click)="revertOriginalLocation()">
+            <ion-icon name="ios-undo" item-left></ion-icon>
+            Revert to original location
+          </button>
+        </ion-card>
+      </div>
+      <div padding>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label fixed>Pictures</ion-label>
+            </ion-col>
+            <ion-col text-right>
+              <button ion-button (click)="getPictureMethod()">{{ addPicturesBtn }}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <div class="gallery" *ngIf="images.length">
+          <ion-list>
+            <ion-item class="scrollable">
+              <ion-thumbnail item-left *ngFor="let image of images; let i = index">
+                <a (click)="showGallery(i)">
+                  <img src="{{ image.url }}">
+                </a>
+              </ion-thumbnail>
+            </ion-item>
+          </ion-list>
+        </div>
+      </div>
     </form>
   </div>
 </ion-content>

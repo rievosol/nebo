@@ -29,6 +29,7 @@ import { PromotionDetailPage } from '../pages/promotion-detail/promotion-detail'
 import { ModalMapPage } from '../pages/modal-map/modal-map';
 import { ModalGeolocation } from '../pages/modal-geolocation/modal-geolocation';
 import { ModalSearch } from '../pages/modal-search/modal-search';
+import { ModalManageImages } from '../pages/modal-manage-images/modal-manage-images';
 import { MoreOptionsPopoverPage } from '../pages/more-options-popover/more-options-popover';
 import { MoreInfoPopoverPage } from '../pages/more-info-popover/more-info-popover';
 import { GalleryPage } from '../pages/gallery/gallery';
@@ -83,6 +84,7 @@ let pages = [
   ModalMapPage,
   ModalGeolocation,
   ModalSearch,
+  ModalManageImages,
   MoreOptionsPopoverPage,
   MoreInfoPopoverPage,
   GalleryPage,

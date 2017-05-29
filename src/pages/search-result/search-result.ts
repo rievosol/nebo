@@ -22,6 +22,7 @@ export class SearchResult {
   state: string = 'loaded';
   show: string = 'suggestion';
   searchTerm: string = '';
+  emptyResults: boolean = false;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -56,11 +57,15 @@ export class SearchResult {
       case 'searchbar':
         this.state = 'loading';
         this.show = 'result';
+        this.emptyResults = false;
         this.views.getView('search.nearby', {
           append: [encodeURIComponent(this.searchTerm)]
         })
         .subscribe(res => {
           this.resultItems = res.nodes;
+          if (this.resultItems.length == 0) {
+            this.emptyResults = true;
+          }
           this.state = 'loaded';
         });
         break;

@@ -27,43 +27,38 @@ export class GoogleMaps {
     
     let subject = new Subject();
     let names = {};
-    if (position.coords) {
-      let geocoder = new google.maps.Geocoder;
-      let latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      geocoder.geocode({ location: latlng }, (results, status) => {
-        if (status == 'OK') {
-          let output = {};
-          for (let i = 0; i < results.length; i++) {
-            let result = results[i];
-            for (let j = 0; j < result.address_components.length; j++) {
-              let component = result.address_components[j];
-              for (let k = 0; k < component.types.length; k++) {
-                let type = component.types[k];
-                let name = component.short_name;
-                
-                output[type] = output[type] || {};
-                output[type][name] = output[type][name] ? output[type][name] + 1 : 1;
-              }
-            }
-          }
-
-          for (let type in output) {
-            let count = 0;
-            for (let name in output[type]) {
-              if (output[type][name] > count) {
-                names[type] = name;
-                count = output[type][name];
-              }
+    let geocoder = new google.maps.Geocoder;
+    let latlng = new google.maps.LatLng(position.latitude, position.longitude);
+    geocoder.geocode({ location: latlng }, (results, status) => {
+      if (status == 'OK') {
+        let output = {};
+        for (let i = 0; i < results.length; i++) {
+          let result = results[i];
+          for (let j = 0; j < result.address_components.length; j++) {
+            let component = result.address_components[j];
+            for (let k = 0; k < component.types.length; k++) {
+              let type = component.types[k];
+              let name = component.short_name;
+              
+              output[type] = output[type] || {};
+              output[type][name] = output[type][name] ? output[type][name] + 1 : 1;
             }
           }
         }
-        subject.next(names);
-        subject.complete();
-      });
-    }
-    else {
-      subject.error('cannot find location name');
-    }
+
+        for (let type in output) {
+          let count = 0;
+          for (let name in output[type]) {
+            if (output[type][name] > count) {
+              names[type] = name;
+              count = output[type][name];
+            }
+          }
+        }
+      }
+      subject.next({ names: names });
+      subject.complete();
+    });
     return subject;
   }
 }

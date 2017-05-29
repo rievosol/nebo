@@ -1,3 +1,11 @@
 page-system-connect {
-
+  .text-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  .text-inner {
+    text-align: center;
+  }
 }

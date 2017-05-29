@@ -19,7 +19,7 @@ export class GalleryPage {
   constructor(public navParams: NavParams,
               public viewCtrl: ViewController) {
     this.images = this.navParams.data.images;
-    this.start = this.navParams.data.start;
+    this.start = this.navParams.data.start || 0;
   }
 
   dismiss() {

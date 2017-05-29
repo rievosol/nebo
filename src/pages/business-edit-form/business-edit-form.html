@@ -14,6 +14,32 @@
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
     <form [formGroup]="form">
+      <div padding>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label fixed>Profile picture</ion-label>
+            </ion-col>
+            <ion-col text-right>
+              <button ion-button (click)="editProfilePicture()">
+                {{ profilePictureBtn }}
+              </button>
+              <button ion-button (click)="revertProfilePicture()" *ngIf="newProfilePicIsSet">
+                Revert
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-list *ngIf="profilePicture">
+          <ion-item>
+            <ion-thumbnail item-left>
+              <a (click)="showProfilePicture()">
+                <img src="{{ profilePicture ? profilePicture.url : '' }}">
+              </a>
+            </ion-thumbnail>
+          </ion-item>
+        </ion-list>
+      </div>
       <ion-item>
         <ion-label floating>Title</ion-label>
         <ion-input type="text" formControlName="title"></ion-input>
@@ -23,7 +49,7 @@
         <ion-textarea formControlName="body"></ion-textarea>
       </ion-item>
       <ion-item>
-        <ion-label>Category</ion-label>
+        <ion-label stacked>Category</ion-label>
         <ion-select formControlName="category">
           <ion-option *ngFor="let option of categoryOptions" value="{{option.tid}}">{{option.name}}</ion-option>
         </ion-select>
@@ -33,15 +59,43 @@
         <ion-input type="tel" formControlName="phone"></ion-input>
       </ion-item>
       <div padding>
-        <ion-label fixed>Location</ion-label>
-        <button ion-button block (click)="setLocation()">Get current location</button>
-        <div class="map"></div>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label fixed>Location</ion-label>
+            </ion-col>
+            <ion-col text-right>
+              <button ion-button (click)="setLocation()">{{ addLocationBtn }}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-card *ngIf="position">
+          <div id="map" #map></div>
+          <ion-item>
+            <ion-icon name="pin" item-left></ion-icon>
+            <h2>{{ locationName }}</h2>
+            <p>{{ geoPoint }}</p>
+          </ion-item>
+          <button ion-item *ngIf="newLocationIsSet" (click)="revertOriginalLocation()">
+            <ion-icon name="ios-undo" item-left></ion-icon>
+            Revert to original location
+          </button>
+        </ion-card>
       </div>
       <div padding>
-        <ion-label fixed>Pictures</ion-label>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label fixed>Pictures</ion-label>
+            </ion-col>
+            <ion-col text-right>
+              <button ion-button (click)="getPictureMethod()">{{ addPicturesBtn }}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
         <div class="gallery" *ngIf="images.length">
           <ion-list>
-            <ion-item>
+            <ion-item class="scrollable">
               <ion-thumbnail item-left *ngFor="let image of images; let i = index">
                 <a (click)="showGallery(i)">
                   <img src="{{ image.url }}">
@@ -50,8 +104,6 @@
             </ion-item>
           </ion-list>
         </div>
-        <button ion-button block (click)="getPictureMethod()">Get pictures</button>
-        <div class="pictures"></div>
       </div>
     </form>
   </div>

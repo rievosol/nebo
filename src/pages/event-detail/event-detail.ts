@@ -39,6 +39,7 @@ export class EventDetailPage {
   timeToStart: string;
   expireInterval: string;
   canEdit: boolean;
+  statusIcon: string = 'eye';
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -62,6 +63,7 @@ export class EventDetailPage {
     this.nodeService.load(this._nid).subscribe(node => {
       console.log(node);
       this.node = node;
+      this.statusIcon = parseInt(node.status) ? 'eye' : 'eye-off';
       this.canEdit = this.nodeService.checkPermissionEdit(node);
       this.title = node.title;
       this.body = node.body.und ? node.body.und[0].value : '';
@@ -205,8 +207,13 @@ export class EventDetailPage {
   }
 
   showMap() {
-    let map = this.modalCtrl.create(ModalMapPage, { geo: this.position.geo });
-    map.present();
+    if (this.position.lat && this.position.lon) {
+      let map = this.modalCtrl.create(ModalMapPage, {
+        title: this.title,
+        position: this.position
+      });
+      map.present();
+    }
   }
 
   showGallery(index) {

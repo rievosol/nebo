@@ -20,6 +20,13 @@ page-business-detail {
     button {
       padding: 0;
     }
+    
+    .scrollable {
+      width: auto;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
   }
 
   .spinner-container {

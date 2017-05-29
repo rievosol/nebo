@@ -25,7 +25,7 @@ export class CameraService {
     
   }
 
-  selectSource() {
+  private selectSource() {
     let subject = new Subject();
     let action = this.actionSheetCtrl.create({
       title: 'Select source',
@@ -71,8 +71,10 @@ export class CameraService {
         quality: 100,
         destinationType: this.camera.DestinationType.FILE_URI,
         encodingType: this.camera.EncodingType.JPEG,
-        sourceType: sourceType
-        //saveToPhotoAlbum: true
+        mediaType: this.camera.MediaType.PICTURE,
+        sourceType: sourceType,
+        correctOrientation: true
+        //saveToPhotoAlbum: true // got issue
       };
 
       this.camera.getPicture(options).then(imagePath => {
@@ -91,11 +93,11 @@ export class CameraService {
             let targetDir = this.file.externalApplicationStorageDirectory;
             this.file.moveFile(file.filesystem.root.nativeURL, file.name, targetDir, file.name)
               .then(fileEntry => {
-                console.log(fileEntry);
                 subject.next({
                   url: fileEntry.nativeURL,
                   directory: targetDir,
-                  fileName: fileEntry.name
+                  fileName: fileEntry.name,
+                  unsaved: true
                 });
               },
               error => {

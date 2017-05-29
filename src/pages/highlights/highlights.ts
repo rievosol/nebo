@@ -1,5 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, ActionSheetController, ModalController } from 'ionic-angular';
+import { Observable } from 'rxjs/Observable';
 
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 import { OrganizationEditFormPage } from '../organization-edit-form/organization-edit-form';
@@ -56,13 +57,22 @@ export class HighlightsPage {
 
   ionViewDidEnter() {
     this.geolocation.getPosition()
-      .flatMap(position => {
-        return this.googleMaps.geocode(position);
+      .flatMap(res => {
+        if (res['error']) {
+          return Observable.of(res);
+        }
+        return this.googleMaps.geocode(res);
       })
-      .subscribe(names => {
+      .subscribe(res => {
         this.zone.run(() => {
-          let sublocality = names['sublocality'] ? names['sublocality'] + ', ' : '';
-          this.location = sublocality + names['locality'];
+          if (res['names']) {
+            let names = res['names'];
+            let sublocality = names['sublocality'] ? names['sublocality'] + ', ' : '';
+            this.location = sublocality + names['locality'];
+          }
+          else if (res['error']) {
+            this.location = 'Cannot be determined';
+          }
           this.findLocation = 'found';
         });
       });
@@ -168,9 +178,8 @@ export class HighlightsPage {
 
   showMap() {
     let modal = this.modalCtrl.create(ModalMapPage, {
-      lat: this.geolocation.position.latitude,
-      lon: this.geolocation.position.longitude,
-      title: 'Your current location'
+      title: 'Your current location',
+      position: this.geolocation.position
     });
     modal.present();
   }

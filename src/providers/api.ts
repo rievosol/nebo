@@ -83,4 +83,18 @@ export class Api {
         return this.systemConnect(res);
       });
   }
+
+  field_info_instances(type?: string, bundle?: string, name?: string) {
+    let info = this.systemData.field_info_instances;
+    if (type && info[type]) {
+      info = info[type];
+      if (bundle && info[bundle]) {
+        info = info[bundle];
+        if (name && info[name]) {
+          info = info[name];
+        }
+      }
+    }
+    return info;
+  }
 }

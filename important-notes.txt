@@ -1,0 +1,4 @@
+1) To handle bugs encountered when creating or updating a node with multiple NEW images, a patch to Services module's node resources codes has been made.
+Problem: Drupal would not save more than 1 new file even if more than 1 new files are submitted to the node's field element.
+Solution: Apply the following patch.
+https://www.drupal.org/files/issues/multivalue_fields_fix-2224803-59.patch

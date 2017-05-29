@@ -28,6 +28,7 @@ export class AnnouncementDetailPage {
   group: any;
   expireInterval: string;
   canEdit: boolean;
+  statusIcon: string = 'eye';
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -48,6 +49,7 @@ export class AnnouncementDetailPage {
     this.nodeService.load(this._nid).subscribe(node => {
       console.log(node);
       this.state = 'loaded';
+      this.statusIcon = parseInt(node.status) ? 'eye' : 'eye-off';
       this.node = node;
       this.canEdit = this.nodeService.checkPermissionEdit(node);
       this.title = node.title;

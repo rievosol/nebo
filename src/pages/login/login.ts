@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
 import { User } from '../../providers/user';
@@ -21,7 +21,8 @@ export class LoginPage {
 
   constructor(public navCtrl: NavController,
               public fb: FormBuilder,
-              public user: User) {
+              public user: User,
+              public alertCtrl: AlertController) {
     this.login = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -34,8 +35,18 @@ export class LoginPage {
       username: input.username,
       password: input.password
     };
-    this.user.login(account).subscribe(user => {
-      this.navCtrl.setRoot(TabsPage);
+    this.user.login(account).subscribe(res => {
+      if (res.error) {
+        let alert = this.alertCtrl.create({
+          title: 'Login failed',
+          message: 'Please check your username & password and try again.',
+          buttons: ['OK']
+        });
+        alert.present();
+      }
+      else {
+        this.navCtrl.setRoot(TabsPage);
+      }
     });
   }
 

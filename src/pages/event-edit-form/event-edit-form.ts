@@ -1,10 +1,14 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Content, NavController, NavParams, ModalController } from 'ionic-angular';
 import { NodeService } from '../../providers/node-service';
 import { ViewsService } from '../../providers/views-service';
+import { CameraService } from '../../providers/camera-service';
 import { Neerby } from '../../providers/neerby';
+import { GoogleMaps } from '../../providers/google-maps';
 import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
+
+declare var google: any;
 
 /*
   Generated class for the EventEditForm page.
@@ -19,6 +23,10 @@ import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
 export class EventEditFormPage {
 
   @ViewChild(Content) content: Content;
+  @ViewChild('map') mapElement: ElementRef;
+  
+  private type: string = 'event';
+  private typeText: string = 'Event';
 
   private nid: number;
   private form: FormGroup;
@@ -28,7 +36,17 @@ export class EventEditFormPage {
   public pageTitle: string;
   public groupOptions: any[];
   viewPath: string = 'og.audienceOptions';
-  public position: any;
+  position: any = null;
+  originalPosition: any = null;
+  images: any[] = [];
+  hasLocation: boolean = false;
+  locationName: string;
+  geoPoint: string;
+  newLocationIsSet: boolean = false;
+  addLocationBtn: string = 'Add location';
+  addPicturesBtn: string = 'Add pictures';
+  minDate: any;
+  minFinishDate: any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -36,14 +54,19 @@ export class EventEditFormPage {
               public nodeService: NodeService,
               public views: ViewsService,
               public neerby: Neerby,
-              public modalCtrl: ModalController) {
-    let now = this.toLocalIso(new Date().toISOString());
+              public modalCtrl: ModalController,
+              public cameraService: CameraService,
+              public googleMaps: GoogleMaps,
+              private zone: NgZone) {
+
+    let tomorrow = this.getMinDate();
+    this.minFinishDate = this.minDate = tomorrow.substr(0, 10);
     this.form = fb.group({
       title: ['', Validators.required],
       body: ['', Validators.required],
       group: ['', Validators.required],
-      start: [now, Validators.required],
-      finish: [now, Validators.required],
+      start: [tomorrow, Validators.required],
+      finish: [tomorrow, Validators.required],
       phone: [''],
       latitude: [''],
       longitude: [''],
@@ -54,7 +77,7 @@ export class EventEditFormPage {
     this.nid = this.navParams.get('nid');
     this.action = 'create';
     this.buttonText = 'Create';
-    this.pageTitle = 'Create New Event';
+    this.pageTitle = 'Create New ' + this.typeText;
   }
 
   ionViewDidLoad() {
@@ -66,7 +89,7 @@ export class EventEditFormPage {
     if (this.nid) {
       this.action = 'update';
       this.buttonText = 'Update';
-      this.pageTitle = 'Update Event';
+      this.pageTitle = 'Update ' + this.typeText;
       stream.flatMap(() => {
         return this.nodeService.load(this.nid)
           .map(node => {
@@ -79,6 +102,7 @@ export class EventEditFormPage {
             this.form.controls['group'].setValue(group);
 
             let start = node.field_date.und ? this.toLocalIso(node.field_date.und[0].value) : '';
+            this.minDate = this.minFinishDate = start.substr(0, 10);
             let finish = '';
             if (node.field_date.und && node.field_date.und[0].value2) {
               finish = this.toLocalIso(node.field_date.und[0].value2);
@@ -89,16 +113,24 @@ export class EventEditFormPage {
             let phone = node.field_phone.und ? node.field_phone.und[0].value : '';
             this.form.controls['phone'].setValue(phone);
             
-            let position = node.field_position.und ? node.field_position.und[0] : { lat: '', lon: ''};
-            this.position = {
-              latitude: position.lat,
-              longitude: position.lon
-            };
+            if (node.field_position.und) {
+              this.position = node.field_position.und[0];
+              this.position.latitude = this.position.lat;
+              this.position.longitude = this.position.lon;
+              this.addLocationBtn = 'Modify';
+              this.originalPosition = this.position;
+            }
+
+            this.images = node.field_image.und ? node.field_image.und : [];
+            if (this.images.length > 0) {
+              this.addPicturesBtn = 'Modify';
+            }
           });
       })
       .subscribe(() => {
         this.state = 'loaded';
         this.content.resize();
+        this.previewLocation();
       });
     }
     else {
@@ -112,22 +144,20 @@ export class EventEditFormPage {
 
   save() {
     let input = this.form.value;
-
     let start = this.getDateTime(input.start);
     let finish = this.getDateTime(input.finish);
 
     let node: any = {
-      type: 'event',
+      type: this.type,
       title: input.title,
       body: {
         und: [{ value: input.body }]
       },
-      og_group_ref: { und: input.group },
+      og_group_ref: { 
+        und: input.group 
+      },
       field_phone: {
         und: [{ value: input.phone }]
-      },
-      field_position: {
-        und: [{ geom: { lat: this.position.latitude, lon: this.position.longitude }}]
       },
       field_date: {
         und: [{
@@ -143,6 +173,23 @@ export class EventEditFormPage {
       }
     };
 
+    if (this.position) {
+      node.field_position = {
+        und: [{
+          geom: {
+            lat: this.position.latitude,
+            lon: this.position.longitude
+          }
+        }]
+      };
+    }
+
+    if (this.images.length) {
+      node.field_image = {
+        und: this.images
+      };
+    }
+
     if (this.action == 'create') {
       node.neerby_access_period = input.publishPeriod;
     }
@@ -150,7 +197,7 @@ export class EventEditFormPage {
       node.nid = this.nid;
     }
     
-    this.nodeService.save(node).subscribe(data => {
+    this.nodeService.save(node).subscribe(savedNode => {
       this.navCtrl.pop();
     });
   }
@@ -185,18 +232,85 @@ export class EventEditFormPage {
     }
     let o = new Date().getTimezoneOffset() * 60000;
     let _date = new Date(new Date(date).getTime() - o).toISOString();
-    return _date.slice(0, -1);
+    return _date;
+  }
+
+  updateDate(date, element) {
+    let dateTime = date.year + '-';
+    dateTime += (date.month > 9 ? date.month : '0' + date.month) + '-';
+    dateTime += (date.day > 9 ? date.day : '0' + date.day) + 'T';
+    dateTime += (date.hour > 9 ? date.hour : '0' + date.hour) + ':';
+    dateTime += (date.minute > 9 ? date.minute : '0' + date.minute) + ':';
+    dateTime += (date.second > 9 ? date.second : '0' + date.second) + 'Z';
+    
+    switch(element) {
+      case 'start':
+        this.minFinishDate = dateTime.substr(0, 10);        
+        if (new Date(this.form.value.finish).getTime() < new Date(dateTime).getTime()) {
+          this.form.controls['finish'].setValue(dateTime);
+        }
+        break;
+      
+      case 'finish':
+        if (new Date(dateTime).getTime() < new Date(this.form.value.start).getTime()) {
+          this.form.controls['start'].setValue(dateTime);
+        }
+        break;
+    }
+  }
+
+  getMinDate() {
+    let min = new Date();
+    min.setDate(min.getDate() + 1);
+    return this.toLocalIso(min.toISOString());
   }
 
   setLocation() {
     let modal = this.modalCtrl.create(ModalGeolocation);
-    modal.onDidDismiss(position => {
-      if (position) {
-        console.log(position);
-        this.position = position.data;
+    modal.onDidDismiss(passedData => {
+      if (passedData) {
+        this.position = passedData.data;
+        this.newLocationIsSet = this.originalPosition ? true : false;
+        this.addLocationBtn = 'Modify';
+        this.previewLocation();
       }
     });
     modal.present();
+  }
+
+  previewLocation() {
+    if (this.position) {
+      this.googleMaps.geocode(this.position).subscribe(res => {
+        let names = res['names'];
+        this.geoPoint = parseFloat(this.position.latitude) + ', ' + parseFloat(this.position.longitude); 
+        this.zone.run(() => {
+          this.locationName = (names['sublocality'] ? names['sublocality'] + ', ' : '') + names['locality'];
+        });
+        let latlng = new google.maps.LatLng(this.position.latitude, this.position.longitude);
+        let map = new google.maps.Map(this.mapElement.nativeElement, {
+          center: latlng,
+          zoom: 15
+        });
+        let marker = new google.maps.Marker({
+          position: latlng
+        });
+        marker.setMap(map);
+        google.maps.event.trigger(map, 'resize');
+      });
+    }
+  }
+
+  revertOriginalLocation() {
+    this.position = this.originalPosition;
+    this.previewLocation();
+    this.newLocationIsSet = false;
+  }
+
+  getPictureMethod() {
+    this.cameraService.takePicture().subscribe(file => {
+      file['unsaved'] = true;
+      this.images.push(file);
+    });
   }
 
 }

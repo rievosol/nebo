@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/filter';
 
 /*
@@ -40,23 +41,41 @@ export class GeolocationService {
     let subject = new Subject();
 
     let timeout = setTimeout(() => {
+      savedPosition = savedPosition || {};
       subject.next(savedPosition);
       subscription.unsubscribe();
     }, waitTime);
 
-    let subscription = this.watchPos.subscribe(position => {
-      console.log(position);
-      if (position.coords.accuracy < minAccuracy) {
-        clearTimeout(timeout);
-        subject.next(position);
-        subscription.unsubscribe();
-      }
-      else if (!savedPosition || (savedPosition && position.coords.accuracy < savedPosition.coords.accuracy)) {
-        savedPosition = position;
-        this.lastSavedPosition = position;
-      }
-    });
-
+    let subscription = this.watchPos
+      .catch(err => {
+        console.log(err);
+        let error: any = {
+          error: {
+            watchPosition: err
+          }
+        };
+        return Observable.of(error);
+      })
+      .subscribe(res => {
+        console.log(res);
+        if (res.error || !res.coords) {
+          // This is error.
+          let error = res.error ? res : { error: res };
+          subject.next(error);
+        }
+        else if (res.coords) {
+          let coords = res.coords;
+          if (coords.accuracy < minAccuracy) {
+            clearTimeout(timeout);
+            subject.next(coords);
+            subscription.unsubscribe();
+          }
+          else if (!savedPosition || (savedPosition && coords.accuracy < savedPosition.accuracy)) {
+            savedPosition = coords;
+            this.lastSavedPosition = coords;
+          }
+        }
+      });
     return subject;
   }
 

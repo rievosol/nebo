@@ -10,7 +10,7 @@
     <ion-icon name="arrow-back"></ion-icon>
   </button>
   
-  <ion-slides initialSlide="{{ start }}" pager="true">
+  <ion-slides initialSlide="{{ start }}" pager="true" zoom="true" paginationType="progress">
     <ion-slide *ngFor="let image of images">
       <img src="{{ image.url }}">
     </ion-slide>

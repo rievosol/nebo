@@ -38,22 +38,31 @@ export class User {
     loading.present();
 
     return this.api.getToken()
-      .flatMap(token => {
-        return this.userLogin(account, token);
+      .flatMap(res => {
+        if (res.error) {
+          return Observable.of(res);
+        }
+        return this.userLogin(account, res);
       })
-      .flatMap(() => {
+      .flatMap(res => {
+        if (res.error) {
+          return Observable.of(res);
+        }
         return this.api.connect();
       })
-      .flatMap(data => {
+      .flatMap(res => {
+        loading.dismiss();
+        if (res.error) {
+          return Observable.of(res);
+        }
         this.bootstrap();
         let toast = this.toastCtrl.create({
-          message: 'Welcome back, ' + data.user.name,
+          message: 'Welcome back, ' + res.user.name,
           duration: 3000,
           position: 'bottom'
         });
         toast.present();
-        loading.dismiss();
-        return Observable.of(data.user);
+        return Observable.of(res.user);
       });
   }
 
@@ -63,7 +72,71 @@ export class User {
       'X-CSRF-Token': token
     });
     let options = new RequestOptions({ headers: headers });
-    return this.http.post(this.loginUrl, account, options);
+    return this.http.post(this.loginUrl, account, options)
+      .catch(err => {
+        let error: any = {
+          error: {
+            login: err
+          }
+        };
+        return Observable.of(error);
+      })
+      .map(res => {
+        if (res.error) {
+          return res;
+        }
+        return res.json();
+      });
+  }
+
+  logout() {
+    let loading = this.loadingCtrl.create();
+    loading.present();
+
+    return this.api.getToken()
+      .flatMap(res => {
+        if (res.error) {
+          return Observable.of(res);
+        }
+        return this.userLogout(res);
+      })
+      .flatMap(res => {
+        loading.dismiss();
+        if (res.error) {
+          return Observable.of(res);
+        }
+        let toast = this.toastCtrl.create({
+          message: 'Logout successful',
+          duration: 3000,
+          position: 'bottom'
+        });
+        toast.present();
+        return Observable.of('OK');
+      });
+  }
+
+  private userLogout(token: string) {
+    let headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': token
+    });
+    let options = new RequestOptions({ headers: headers });
+    return this.http.post(this.logoutUrl, null, options)
+      .catch(err => {
+        let error: any = {
+          error: {
+            logout: err
+          }
+        }
+        return Observable.of(error);
+      })
+      .map(res => {
+        console.log(res);
+        if (res.error) {
+          return res;
+        }
+        return res.json();
+      });
   }
 
   register(account: any) {
@@ -118,38 +191,5 @@ export class User {
     else {
       this.enableAnonymousMenu();
     }
-  }
-
-  logout() {
-    let loading = this.loadingCtrl.create();
-    loading.present();
-
-    return this.api.getToken()
-      .flatMap(token => {
-        return this.userLogout(token);
-      })
-      .flatMap(() => {
-        return this.api.connect();
-      })
-      .flatMap(data => {
-        this.bootstrap();
-        let toast = this.toastCtrl.create({
-          message: 'Logout successful',
-          duration: 3000,
-          position: 'bottom'
-        });
-        toast.present();
-        loading.dismiss();
-        return Observable.of(data.user);
-      });
-  }
-
-  private userLogout(token: string) {
-    let headers = new Headers({
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': token
-    });
-    let options = new RequestOptions({ headers: headers });
-    return this.http.post(this.logoutUrl, null, options);
   }
 }

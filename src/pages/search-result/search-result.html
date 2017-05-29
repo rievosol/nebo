@@ -29,6 +29,9 @@
           <h3>{{ item.category }}</h3>
           <p>{{ item.desc }}</p>
         </button>
+        <ion-item *ngIf="emptyResults">
+          <p>No result found.</p>
+        </ion-item>
       </ion-list>
     </div>
   </div>

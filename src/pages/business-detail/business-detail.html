@@ -123,7 +123,7 @@
     
     <div class="gallery" *ngIf="images.length">
       <ion-list>
-        <ion-item>
+        <ion-item class="scrollable">
           <ion-thumbnail item-left *ngFor="let image of images; let i = index">
             <a (click)="showGallery(i)">
               <img src="{{ image.url }}">

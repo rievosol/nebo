@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, AlertController } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
@@ -29,7 +29,8 @@ export class MyApp {
               public splashScreen: SplashScreen,
               public statusBar: StatusBar,
               public api: Api,
-              public user: User) {
+              public user: User,
+              public alertCtrl: AlertController) {
 
     this.initializeApp();
 
@@ -63,8 +64,18 @@ export class MyApp {
   }
 
   logout() {
-    this.user.logout().subscribe(user => {
-      this.nav.setRoot(SystemConnectPage);
+    this.user.logout().subscribe(res => {
+      if (res.error) {
+        let alert = this.alertCtrl.create({
+          title: 'Logout failed',
+          message: 'Could not log you out. Please contact administrator.',
+          buttons: ['OK']
+        });
+        alert.present();
+      }
+      else {
+        this.nav.setRoot(SystemConnectPage);
+      }
     });
   }
 

@@ -25,7 +25,10 @@ export class ModalMapPage {
   ionViewDidLoad() {
     let params = this.navParams.data;
     this.title = params.title;
-    let latLng = new google.maps.LatLng(params.lat, params.lon);
+    let position = params.position;
+    position.lat = position.lat || position.latitude;
+    position.lon = position.lon || position.longitude;
+    let latLng = new google.maps.LatLng(position.lat, position.lon);
     let map = new google.maps.Map(this.mapElement.nativeElement, {
       center: latLng,
       zoom: 15

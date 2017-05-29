@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { App, ActionSheetController, ToastController, LoadingController } from 'ionic-angular';
+import { File } from '@ionic-native/file';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 import { Api } from './api';
 import { User } from './user';
@@ -23,6 +25,7 @@ import 'rxjs/add/observable/from';
 export class NodeService {
 
   nodeUrl: string = this.api.serviceUrl + '/node';
+  fileUrl: string = this.api.serviceUrl + '/file';
 
   constructor(public appCtrl: App,
               public http: Http,
@@ -31,37 +34,14 @@ export class NodeService {
               public views: ViewsService,
               public actionSheetCtrl: ActionSheetController,
               public toastCtrl: ToastController,
-              public loadingCtrl: LoadingController) {
+              public loadingCtrl: LoadingController,
+              private file: File) {
     
   }
 
   load(nid: number) {
     return this.http.get(this.nodeUrl + '/' + nid + '.json')
       .map(res => res.json());
-  }
-  
-  /**
-   * the actual node saving happens here.
-   * @param node 
-   * @param token 
-   */
-  private saveNode(node: any, token: string) {
-    let headers = new Headers({
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': token
-    });
-    let options = new RequestOptions({ headers: headers });
-    console.log(node);
-    if (node.nid) {
-      // update
-      return this.http.put(this.nodeUrl + '/' + node.nid + '.json', node, options)
-        .map(res => res.json());
-    }
-    else {
-      // create
-      return this.http.post(this.nodeUrl + '.json', node, options)
-        .map(res => res.json());
-    }
   }
 
   /**
@@ -70,36 +50,126 @@ export class NodeService {
    * as per normal.
    * @param node 
    */
-  save(node: any) {
+  public save(node: any) {
     let loading = this.loadingCtrl.create({ content: 'Saving...' });
     loading.present();
     
     let toast = this.toastCtrl.create({
-      message: 'Content successfully ' + node.nid ? 'updated' : 'created',
+      message: 'Content successfully ' + (node.nid ? 'updated' : 'created'),
       duration: 3000,
       position: 'bottom'
     });
 
-    return this.api.getToken()
-      .flatMap(token => {
-        return this.saveNode(node, token);
-      })
-      .flatMap(data => {
-        loading.dismiss();
-        toast.present();
-        return Observable.of(data);
+    return this.saveFiles(node)
+      .flatMap(res => {
+        return this.saveNode(res).map(data => {
+          loading.dismiss();
+          toast.present();
+          return data;
+        })
       });
   }
-  
-  /*
-  saveFile(node: any, token: string) {
-    let headers = new Headers({
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': token
+
+  /**
+   * the actual node saving happens here.
+   * @param node 
+   * @param token 
+   */
+  private saveNode(node: any) {
+    console.log(node);
+    return this.api.getToken()
+      .flatMap(token => {
+        let headers = new Headers({
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': token
+        });
+        let options = new RequestOptions({ headers: headers });
+        let stream;
+        
+        if (node.nid) {
+          stream = this.http.put(this.nodeUrl + '/' + node.nid + '.json', node, options);
+        }
+        else {
+          stream = this.http.post(this.nodeUrl + '.json', node, options);
+        }
+        return stream.map(res => res.json());
     });
-    let options = new RequestOptions({ headers: headers });
   }
-  */
+
+  private saveFiles(node: any) {
+    let imageFields = {};
+    let fields = this.api.field_info_instances('node', node.type);
+    let streams: any[] = [];
+    for (let name in fields) {
+      if (fields[name].widget.type == 'image_image') {
+        if (node[name] && node[name]['und'] && (node[name]['und'].length > 0)) {
+          imageFields[name] = [];
+          let stream = Observable.from(node[name]['und'])
+            .concatMap(file => {
+              if (!file['fid'] && file['unsaved']) {
+                file['nodeType'] = node.type;
+                file['fieldName'] = name;
+                return this.saveFile(file).map(savedFile => {
+                  return savedFile.fid;
+                });
+              }
+              else {
+                return Observable.of(file['fid']);
+              }
+            })
+            .map(fid => {
+              imageFields[name].push({
+                fid: fid
+              });
+            });
+          streams.push(stream);
+        }
+      }
+    }
+    
+    if (!streams.length) {
+      return Observable.of(node);
+    }
+    return Observable.forkJoin(streams).map(() => {
+      for (let name in imageFields) {
+        node[name]['und'] = imageFields[name];
+      }
+      return node;
+    });
+  }
+  
+  private saveFile(file: any) {
+    let _file;
+    return this.prepareFile(file)
+      .flatMap(preparedFile => {
+        _file = preparedFile;
+        return this.api.getToken();
+      })
+      .flatMap(token => {
+        let headers = new Headers({
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': token
+        });
+        let options = new RequestOptions({ headers: headers });
+        return this.http.post(this.fileUrl + '.json', _file, options)
+          .map(res => res.json());
+      });
+  }
+
+  private prepareFile(file: any) {
+    let subject = new Subject();
+    let field = this.api.field_info_instances('node', file.nodeType, file.fieldName)
+    this.file.readAsDataURL(file.directory, file.fileName).then(imageData => {
+      let data = imageData.substr(imageData.indexOf(',') + 1);
+      subject.next({
+        file: data,
+        filename: file.fileName,
+        filepath: 'public://' + field.settings.file_directory + '/' + file.fileName
+      });
+      subject.complete();
+    });
+    return subject;
+  }
 
   checkPermissionEdit(node) {
     let perm = this.user.nodePermissions[node.type];

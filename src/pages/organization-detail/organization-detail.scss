@@ -20,6 +20,13 @@ page-organization-detail {
     button {
       padding: 0;
     }
+    
+    .scrollable {
+      width: auto;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
   }
 
   .spinner-container {
@@ -31,6 +38,7 @@ page-organization-detail {
 
   .profile {
     background-color: #fff;
+    position: relative;
 
     ion-thumbnail {
       img {
@@ -41,6 +49,10 @@ page-organization-detail {
 
     ion-icon {
       margin: 2px 5px 2px 0;
+    }
+
+    ion-label {
+      margin-right: 22px;
     }
 
     h1.title {
@@ -57,6 +69,13 @@ page-organization-detail {
           bottom: 2px;
         }
       }
+    }
+
+    .more-button {
+      position: absolute;
+      right: 0;
+      top: 3px;
+      z-index: 10;
     }
   }
 
@@ -79,4 +98,5 @@ page-organization-detail {
       white-space: pre-line;
     }
   }
+
 }

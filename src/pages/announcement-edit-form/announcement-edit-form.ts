@@ -21,6 +21,9 @@ import 'rxjs/add/operator/mergeMap';
 export class AnnouncementEditFormPage {
 
   @ViewChild(Content) content: Content;
+  
+  private type: string = 'announcement';
+  private typeText: string = 'Announcement';
 
   private nid: number;
   private form: FormGroup;
@@ -48,7 +51,7 @@ export class AnnouncementEditFormPage {
     this.nid = this.navParams.get('nid');
     this.action = 'create';
     this.buttonText = 'Create';
-    this.pageTitle = 'Create New Announcement';
+    this.pageTitle = 'Create New ' + this.typeText;
   }
 
   ionViewDidLoad() {
@@ -60,7 +63,7 @@ export class AnnouncementEditFormPage {
     if (this.nid) {
       this.action = 'update';
       this.buttonText = 'Update';
-      this.pageTitle = 'Update Announcement';
+      this.pageTitle = 'Update ' + this.typeText;
       stream.flatMap(() => {
         return this.nodeService.load(this.nid)
           .map(node => {
@@ -90,7 +93,7 @@ export class AnnouncementEditFormPage {
   save() {
     let input = this.form.value;
     let node: any = {
-      type: 'announcement',
+      type: this.type,
       title: input.title,
       body: {
         und: [{ value: input.body }]
@@ -105,7 +108,7 @@ export class AnnouncementEditFormPage {
       node.nid = this.nid;
     }
 
-    this.nodeService.save(node).subscribe(data => {
+    this.nodeService.save(node).subscribe(savedNode => {
       this.navCtrl.pop();
     });
   }

@@ -2,17 +2,16 @@ import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Http } from '@angular/http';
 import { NavController, NavParams, LoadingController, ToastController, ModalController, PopoverController } from 'ionic-angular';
-
-import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
 import { EventDetailPage } from '../event-detail/event-detail';
 import { ModalMapPage } from '../modal-map/modal-map';
 import { MoreInfoPopoverPage } from '../more-info-popover/more-info-popover';
 import { GalleryPage } from '../gallery/gallery';
-
 import { NodeService } from '../../providers/node-service';
 import { FlagService } from '../../providers/flag-service';
 import { Util } from '../../providers/util';
+
+import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 
 /*
   Generated class for the BusinessDetail page.
@@ -25,8 +24,12 @@ import { Util } from '../../providers/util';
   templateUrl: 'business-detail.html'
 })
 export class BusinessDetailPage {
+  
+  private type: string = 'business';
+  private editPage: any = BusinessEditFormPage;
 
-  node: any;
+  state: string = 'loading';
+  node: any = {};
   title: string;
   body: string;
   category: string;
@@ -36,14 +39,12 @@ export class BusinessDetailPage {
   phone: string;
   sms: any;
   geo: any;
-  position: any;
+  position: any = null;
   childNodes: any;
   favoriteText: string = 'Favorite';
   favoriteColor: string = 'light';
   favoriteCount: string;
-  state: string = 'loading';
-  
-  private _nid: any;
+  private nid: any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -56,16 +57,10 @@ export class BusinessDetailPage {
               public modalCtrl: ModalController,
               public popoverCtrl: PopoverController,
               public util: Util) {
-    this.node = {};
     this.childNodes = {
       announcement: [],
       event: [],
       promotion: []
-    };
-    this.position = {
-      lat: '',
-      lon: '',
-      geo: ''
     };
   }
 
@@ -74,65 +69,54 @@ export class BusinessDetailPage {
   }
 
   ionViewDidEnter() {
-    this._nid = this.navParams.data.nid;
+    this.nid = this.navParams.data.nid;
     this.title = this.navParams.data.title;
-    this.loadNode().subscribe(status => {
+    this.loadNode().subscribe(() => {
       this.state = 'loaded';
-    })
+    });
   }
 
   loadNode() {
-    return this.nodeService.load(this._nid)
+    return this.nodeService.load(this.nid)
       .flatMap(node => {
         console.log(node);
         Object.assign(this.node, node);
+        // Fields
+        this.profilePicture = node.field_profile_picture.und ? node.field_profile_picture.und[0].url : '';
         this.title = node.title;
         this.body = node.body.und ? node.body.und[0].value : '';
-        this.canEdit = this.nodeService.checkPermissionEdit(node);
-        this.category = node.field_category_business.und[0].name;
-        this.images = node.field_image.und ? node.field_image.und : [];
-        this.profilePicture = node.field_profile_picture.und ? node.field_profile_picture.und[0].url : '';
+        this.category = node['field_category_' + this.type].und[0].name;
         this.phone = node.field_phone.und ? node.field_phone.und[0].value : '';
         this.sms = this.util.sanitize('sms:' + this.phone);
-        if (node.field_position.und) {
-          let position = node.field_position.und[0];
-          this.position = {
-            lat: position.lat,
-            lon: position.lon,
-            geo: position.lat + ',' + position.lon
-          };
-          this.geo = this.util.sanitize('geo:' + this.position.geo);
-        }
-        else {
-          this.position = null;
-        }
+        this.images = node.field_image.und ? node.field_image.und : [];
+        this.position = node.field_position.und ? node.field_position.und[0] : this.position;
+        this.geo = this.position.geo ? this.util.sanitize('geo:' + this.position.geo) : '';
         
+        // Features
         this.node.flag = node.flag_status;
         this.favoriteCount = node.flag_count['favorites'] ? node.flag_count['favorites'] : '';
-        this.updateFavorite(node.flag_status['favorites']);
+        this.updateFavoriteBtn(node.flag_status['favorites']);
+        this.canEdit = this.nodeService.checkPermissionEdit(node);
+
         return this.nodeService.getChildNodes(node);
       })
-      .map(nodes => {
-        this.childNodes = nodes;
-        return true;
+      .map(childNodes => {
+        this.childNodes = childNodes;
       });
   }
 
   editNode() {
-    this.navCtrl.push(BusinessEditFormPage, {nid: this._nid});
+    this.navCtrl.push(this.editPage, {nid: this.nid});
   }
 
   displaySection(type) {
     switch (type) {
       case 'announcement':
       case 'event':
-        if (this.childNodes[type]) {
-          return this.childNodes[type].length == 0 ? false : true;
-        }
-        return false;
+        return (this.childNodes[type] && this.childNodes[type].length) ? true : false;
       
       case 'gallery':
-        return this.images.length == 0 ? false : true;
+        return this.images.length ? false : true;
     }
   }
 
@@ -142,18 +126,11 @@ export class BusinessDetailPage {
         return this.phone ? true : false;
 
       case 'sms':
-        if (this.phone) {
-          let firstZero = this.phone.search('0');
-          if (this.phone.charAt(firstZero + 1) == '1') {
-            return true;
-          }
-          return false;
-        }
-        return false;
+        return (this.phone && this.phone.charAt(this.phone.search('0') + 1) == '1') ? true : false;
 
       case 'navigate':
       case 'map':
-        return this.position && this.position.lat && this.position.lon ? true : false;
+        return (this.position && this.position.lat && this.position.lon) ? true : false;
     }
   }
 
@@ -182,14 +159,13 @@ export class BusinessDetailPage {
       .subscribe(res => {
         loading.dismiss();
         if (res[0]) {
-          this.updateFavorite(!initialFlag);
+          this.updateFavoriteBtn(!initialFlag);
           this.showToast(!initialFlag);
         }
       });
-    
   }
 
-  updateFavorite(flagged: boolean) {
+  updateFavoriteBtn(flagged: boolean) {
     this.node.flag['favorites'] = flagged;
     if (flagged) {
       this.favoriteText = 'Favorited';
@@ -215,39 +191,28 @@ export class BusinessDetailPage {
   }
 
   showMap() {
-    let map = this.modalCtrl.create(ModalMapPage, {
-      lat: this.position.lat,
-      lon: this.position.lon,
-      title: this.title
-    });
-    map.present();
+    if (this.position) {
+      let map = this.modalCtrl.create(ModalMapPage, {
+        title: this.title,
+        position: this.position
+      });
+      map.present();
+    }
   }
 
   viewMoreInfo(ev) {
-    let popover = this.popoverCtrl.create(MoreInfoPopoverPage, {
-      node: this.node
-    });
-    popover.present({
-      ev: ev
-    });
+    let popover = this.popoverCtrl.create(MoreInfoPopoverPage, { node: this.node });
+    popover.present({ ev: ev });
   }
 
   showFavoriteCount() {
-    if (this.favoriteCount && this.favoriteCount !== '0') {
-      return true;
-    }
-    return false;
+    return (this.favoriteCount && this.favoriteCount !== '0') ? true: false;
   }
 
   showGallery(index) {
     index = index || 0;
-    let images = [];
-    for (let image of this.images) {
-      console.log(image);
-      images.push(image);
-    }
     let gallery = this.modalCtrl.create(GalleryPage, {
-      images: images,
+      images: this.images,
       start: index
     });
     gallery.present();
