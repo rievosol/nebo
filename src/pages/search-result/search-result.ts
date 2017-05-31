@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ViewsService } from '../../providers/views-service';
+import { GeolocationService } from '../../providers/geolocation-service';
 import { BusinessDetailPage } from '../business-detail/business-detail';
 import { OrganizationDetailPage } from '../organization-detail/organization-detail';
+import { Observable } from 'rxjs/Observable';
 
 /**
  * Generated class for the SearchResult page.
@@ -23,10 +25,15 @@ export class SearchResult {
   show: string = 'suggestion';
   searchTerm: string = '';
   emptyResults: boolean = false;
+  viewPath: string = 'search.nearby';
+  viewData: any = {};
+  infiniteScroll: any;
+  proximity: string;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              public views: ViewsService) {
+              public views: ViewsService,
+              public geolocation: GeolocationService) {
   }
 
   ionViewDidLoad() {
@@ -37,15 +44,25 @@ export class SearchResult {
     this.show = 'suggestion';
     let val = ev.target.value;
     if (val && val.trim() != '') {
-      this.views.getView('search.autocomplete', {
-        params: [{
-            key: 'title',
-            value: encodeURIComponent(val)
-        }]
-      })
-      .subscribe(res => {
-        this.suggestionItems = res.nodes;
-      });
+      this.geolocation.getPosition(null, true)
+        .flatMap(res => {
+          if (res['error']) {
+            return Observable.of(res);
+          }
+          this.proximity = this.geolocation.createFilterString(res, 20);
+          return this.views.getView('search.autocomplete', {
+            params: [{
+              key: 'title',
+              value: encodeURIComponent(val)
+            }],
+            append: [this.proximity]
+          });
+        })
+        .subscribe(res => {
+          if (res['nodes']) {
+            this.suggestionItems = res['nodes'];
+          }
+        });
     }
     else {
       this.suggestionItems = [];
@@ -58,24 +75,37 @@ export class SearchResult {
         this.state = 'loading';
         this.show = 'result';
         this.emptyResults = false;
-        this.views.getView('search.nearby', {
-          append: [encodeURIComponent(this.searchTerm)]
-        })
-        .subscribe(res => {
-          this.resultItems = res.nodes;
-          if (this.resultItems.length == 0) {
-            this.emptyResults = true;
-          }
-          this.state = 'loaded';
-        });
+        this.viewData = {}; // Reset everything
+
+        this.geolocation.getPosition(null, true)
+          .flatMap(res => {
+            if (res['error']) {
+              return Observable.of(res);
+            }
+            this.proximity = this.geolocation.createFilterString(res, 20);
+            return this.views.getView(this.viewPath, {
+              append: [encodeURIComponent(this.searchTerm), this.proximity]
+            });
+          })
+          .subscribe(res => {
+            this.state = 'loaded';
+            if (res['error']) {
+              this.emptyResults = true;
+            }
+            else {
+              this.resultItems = this.updateDetail(res['nodes']);
+              this.viewData = res['view'];
+              if (this.resultItems.length == 0) {
+                this.emptyResults = true;
+              }
+            }
+          });
         break;
 
       case 'suggestion':
         this.itemSelected(item);
         break;
     }
-    
-    
   }
 
   itemSelected(item) {
@@ -92,6 +122,34 @@ export class SearchResult {
         this.navCtrl.push(OrganizationDetailPage, params);
         break;
     }
+  }
+
+  doInfinite(infiniteScroll) {
+    this.infiniteScroll = infiniteScroll;
+    this.views.getView(this.viewPath, {
+      data: this.viewData,
+      scroll: this.infiniteScroll,
+      append: [encodeURIComponent(this.searchTerm), this.proximity]
+    })
+    .subscribe(res => {
+      if (res.nodes && res.nodes.length) {
+        let items = this.updateDetail(res.nodes);
+        this.viewData = res.view;
+        for (let i = 0; i < items.length; i++) {
+          this.resultItems.push(items[i]);
+        }
+      }
+    });
+  }
+
+  updateDetail(items) {
+    for (let i = 0; i < items.length; i++) {
+      let item = items[i];
+      item.favorited = item.favorited == 'True' ? true : false;
+      item.formattedDistance = parseFloat(item.distance).toFixed(2);
+      items[i] = item;
+    }
+    return items;
   }
 
 }

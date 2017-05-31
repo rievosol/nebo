@@ -26,6 +26,7 @@
       <ion-item>
         <ion-label>Group</ion-label>
         <ion-select formControlName="group">
+          <ion-option value="''">- Please select -</ion-option>
           <ion-option *ngFor="let option of groupOptions" value="{{ option.nid }}">{{ option.title }}</ion-option>
         </ion-select>
       </ion-item>

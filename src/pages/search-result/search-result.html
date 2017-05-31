@@ -14,25 +14,38 @@
   <nebo-loading-spinner *ngSwitchCase="'loading'"></nebo-loading-spinner>
   <div *ngSwitchCase="'loaded'">
     <div [ngSwitch]="show">
-      <ion-list no-lines *ngSwitchCase="'suggestion'">
-        <button ion-item *ngFor="let item of suggestionItems" (click)="search(item, 'suggestion')">
-          <ion-icon name="search" item-left small></ion-icon>
-          {{ item.title }}
-        </button>
-      </ion-list>
-      <ion-list *ngSwitchCase="'result'">
-        <button ion-item *ngFor="let item of resultItems" (click)="itemSelected(item)">
-          <ion-thumbnail item-left>
-            <img src="{{ item.image.src }}">
-          </ion-thumbnail>
-          <h2>{{ item.title }}</h2>
-          <h3>{{ item.category }}</h3>
-          <p>{{ item.desc }}</p>
-        </button>
-        <ion-item *ngIf="emptyResults">
-          <p>No result found.</p>
-        </ion-item>
-      </ion-list>
+      <div *ngSwitchCase="'suggestion'">
+        <ion-list no-lines>
+          <button ion-item *ngFor="let item of suggestionItems" (click)="search(item, 'suggestion')">
+            <ion-icon name="search" item-left small></ion-icon>
+            {{ item.title }}
+          </button>
+        </ion-list>
+      </div>
+      <div *ngSwitchCase="'result'">
+        <ion-list>
+          <button ion-item *ngFor="let item of resultItems" (click)="itemSelected(item)">
+            <ion-thumbnail item-left>
+              <img src="{{ item.image.src }}">
+            </ion-thumbnail>
+            <h2>
+              {{ item.title }}
+              <span *ngIf="item.favorited">
+                <ion-icon name="heart" color="primary" small></ion-icon>
+              </span>
+            </h2>
+            <p>{{ item.formattedDistance }} km away</p>
+            <h3>{{ item.category }}</h3>
+            <p>{{ item.desc }}</p>
+          </button>
+          <ion-item *ngIf="emptyResults">
+            <p>No result found.</p>
+          </ion-item>
+        </ion-list>
+        <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+          <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </div>
     </div>
   </div>
 </ion-content>

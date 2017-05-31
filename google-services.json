@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "20344232886",
+    "firebase_url": "https://nebodev-1494657679157.firebaseio.com",
+    "project_id": "nebodev-1494657679157",
+    "storage_bucket": "nebodev-1494657679157.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20344232886:android:9b456adefdfbc9a3",
+        "android_client_info": {
+          "package_name": "com.ionicframework.nebo936210"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20344232886-p76cqrqvfr0q6k73fkq0jmb5kujfld2p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApltD4_0ilG8nXTnL49z7ds92lbNODXZM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20344232886:android:37a83903f1674402",
+        "android_client_info": {
+          "package_name": "my.rievo.nebo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20344232886-p76cqrqvfr0q6k73fkq0jmb5kujfld2p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApltD4_0ilG8nXTnL49z7ds92lbNODXZM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

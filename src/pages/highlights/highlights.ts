@@ -53,27 +53,29 @@ export class HighlightsPage {
 
   ionViewWillEnter() {
     this.state = 'loading';
+    this.findLocation = 'finding';
+    this.location = '';
   }
 
   ionViewDidEnter() {
     this.geolocation.getPosition()
       .flatMap(res => {
-        if (res['error']) {
+        if (!res || (res && res['error'])) {
           return Observable.of(res);
         }
         return this.googleMaps.geocode(res);
       })
       .subscribe(res => {
         this.zone.run(() => {
+          this.findLocation = 'found';
           if (res['names']) {
             let names = res['names'];
             let sublocality = names['sublocality'] ? names['sublocality'] + ', ' : '';
             this.location = sublocality + names['locality'];
           }
-          else if (res['error']) {
+          else {
             this.location = 'Cannot be determined';
           }
-          this.findLocation = 'found';
         });
       });
 

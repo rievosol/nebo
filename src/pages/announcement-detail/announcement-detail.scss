@@ -1,5 +1,10 @@
 page-announcement-detail {
+  ion-content {
+    background-color: #e5e5e5 !important;
+  }
+
   .profile {
+    background-color: #fff;
     ion-icon {
       margin: 2px 5px 2px 0;
     }
@@ -41,7 +46,25 @@ page-announcement-detail {
 
   }
 
+  .gallery {
+    margin-top: 16px;
+
+    button {
+      padding: 0;
+    }
+    
+    .scrollable {
+      width: auto;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
+  }
+
   .body {
+    background-color: #fff;
+    margin-top: 16px;
+
     p {
       white-space: pre-line;
     }

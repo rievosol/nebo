@@ -49,6 +49,19 @@
         </button>
       </ion-list>
     </div>
+
+    <div class="gallery" *ngIf="images.length">
+      <ion-list>
+        <ion-item class="scrollable">
+          <ion-thumbnail item-left *ngFor="let image of images; let i = index">
+            <a (click)="showGallery(i)">
+              <img src="{{ image.url }}">
+            </a>
+          </ion-thumbnail>
+        </ion-item>
+      </ion-list>
+    </div>
+    
     <!-- Content -->
     <div class="body" padding>
       <p>{{ body }}</p>

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Http } from '@angular/http';
-import { NavController, NavParams, LoadingController, ToastController, ModalController, PopoverController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, ToastController, ModalController, PopoverController, AlertController } from 'ionic-angular';
 import { AnnouncementDetailPage } from '../announcement-detail/announcement-detail';
 import { EventDetailPage } from '../event-detail/event-detail';
 import { ModalMapPage } from '../modal-map/modal-map';
@@ -10,7 +10,7 @@ import { GalleryPage } from '../gallery/gallery';
 import { NodeService } from '../../providers/node-service';
 import { FlagService } from '../../providers/flag-service';
 import { Util } from '../../providers/util';
-
+import { GeolocationService } from '../../providers/geolocation-service';
 import { BusinessEditFormPage } from '../business-edit-form/business-edit-form';
 
 /*
@@ -40,10 +40,14 @@ export class BusinessDetailPage {
   sms: any;
   geo: any;
   position: any = null;
+  distance: string = '';
   childNodes: any;
   favoriteText: string = 'Favorite';
   favoriteColor: string = 'light';
   favoriteCount: string;
+  recommendText: string = 'Recommend';
+  recommendColor: string = 'light';
+  recommendCount: string;
   private nid: any;
 
   constructor(public navCtrl: NavController, 
@@ -56,7 +60,9 @@ export class BusinessDetailPage {
               public toastCtrl: ToastController,
               public modalCtrl: ModalController,
               public popoverCtrl: PopoverController,
-              public util: Util) {
+              public util: Util,
+              public alertCtrl: AlertController,
+              public geolocation: GeolocationService) {
     this.childNodes = {
       announcement: [],
       event: [],
@@ -71,9 +77,7 @@ export class BusinessDetailPage {
   ionViewDidEnter() {
     this.nid = this.navParams.data.nid;
     this.title = this.navParams.data.title;
-    this.loadNode().subscribe(() => {
-      this.state = 'loaded';
-    });
+    this.loadNode().subscribe();
   }
 
   loadNode() {
@@ -96,12 +100,19 @@ export class BusinessDetailPage {
         this.node.flag = node.flag_status;
         this.favoriteCount = node.flag_count['favorites'] ? node.flag_count['favorites'] : '';
         this.updateFavoriteBtn(node.flag_status['favorites']);
+        this.recommendCount = node.flag_count['recommend'] ? node.flag_count['recommend'] : '';
+        this.updateRecommendBtn(node.flag_status['recommend']);
         this.canEdit = this.nodeService.checkPermissionEdit(node);
 
         return this.nodeService.getChildNodes(node);
       })
-      .map(childNodes => {
+      .flatMap(childNodes => {
         this.childNodes = childNodes;
+        this.state = 'loaded';
+        return this.geolocation.calculateDistanseFromCurrentLocation(this.position, true)
+          .map(dist => {
+            this.distance = dist.toFixed(2).toString() + ' km away';
+          });
       });
   }
 
@@ -149,20 +160,67 @@ export class BusinessDetailPage {
         break;
     }
   }
-
+  
+  /**
+   * If both Favorite & Recommend flags are false,
+   * a user may simultaneously activate both flags
+   * if Favorite flag is first raised.
+   */
   favorite() {
-    let loading = this.loadingCtrl.create();
-    loading.present();
-    
-    let initialFlag = this.node.flag['favorites'];
-    this.flagService.flag(this.node, 'favorites')
-      .subscribe(res => {
-        loading.dismiss();
-        if (res[0]) {
-          this.updateFavoriteBtn(!initialFlag);
-          this.showToast(!initialFlag);
-        }
+    let initFav = this.node.flag['favorites'];
+    let initRec = this.node.flag['recommend'];
+
+    let flagFav = () => {
+      let loading = this.loadingCtrl.create();
+      loading.present();
+      this.flagService.flag(this.node, 'favorites')
+        .subscribe(res => {
+          this.updateFavoriteBtn(!initFav);
+          this.showToastFavorites(!initFav);
+          loading.dismiss();
+        });
+    };
+
+    if (!initFav && !initRec) {
+      let alert = this.alertCtrl.create({
+        title: 'Recommend this?',
+        message: 'Would you like to also recommend this ' + this.type + '?',
+        buttons: [
+          {
+            text: 'No',
+            handler: () => {
+              flagFav();
+            }
+          },
+          {
+            text: 'Yes',
+            handler: () => {
+              let loading = this.loadingCtrl.create();
+              loading.present();
+              this.flagService.flag(this.node, 'favorites')
+                .flatMap(res => {
+                  return this.flagService.flag(this.node, 'recommend')
+                })
+                .subscribe(res => {
+                  this.updateFavoriteBtn(!initFav);
+                  this.updateRecommendBtn(!initRec);
+                  loading.dismiss();
+                  let toast = this.toastCtrl.create({
+                    message: 'Added to your Favorites and thanks for your recommendation',
+                    duration: 3000,
+                    position: 'bottom'
+                  });
+                  toast.present();
+                });
+            }
+          }
+        ]
       });
+      alert.present();
+    }
+    else {
+      flagFav();
+    }
   }
 
   updateFavoriteBtn(flagged: boolean) {
@@ -177,11 +235,39 @@ export class BusinessDetailPage {
     }
   }
 
-  showToast(flag) {
-    let message = 'Removed from your Favorites';
-    if (flag) {
-      message = 'Added to your Favorites';
-    }
+  recommend() {
+    let loading = this.loadingCtrl.create();
+    loading.present();
+
+    let init = this.node.flag['recommend'];
+    this.flagService.flag(this.node, 'recommend')
+      .subscribe(res => {
+        loading.dismiss();
+        if (res[0]) {
+          this.updateRecommendBtn(!init);
+          this.showToastRecommend(!init);
+        }
+      });
+  }
+
+  updateRecommendBtn(flagged: boolean) {
+    this.node.flag['recommend'] = flagged;
+    this.recommendText = flagged ? 'Recommended' : 'Recommend';
+    this.recommendColor = flagged ? 'primary' : 'light';
+  }
+  
+  showToastRecommend(flag) {
+    let message = flag ? 'Thank you for your recommendation' : 'You are no longer recommending this';
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'bottom'
+    });
+    toast.present();
+  }
+
+  showToastFavorites(flag) {
+    let message = flag ? 'Added to your Favorites' : 'Removed from your Favorites';
     let toast = this.toastCtrl.create({
       message: message,
       duration: 3000,

@@ -5,6 +5,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 
 import { Api } from '../providers/api';
 import { User } from '../providers/user';
+import { PushService } from '../providers/push-service';
 
 import { LoginPage } from '../pages/login/login';
 import { UserRegister } from '../pages/user-register/user-register';
@@ -30,7 +31,8 @@ export class MyApp {
               public statusBar: StatusBar,
               public api: Api,
               public user: User,
-              public alertCtrl: AlertController) {
+              public alertCtrl: AlertController,
+              public pushService: PushService) {
 
     this.initializeApp();
 
@@ -54,6 +56,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.pushService.init();
     });
   }
 

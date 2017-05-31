@@ -218,12 +218,8 @@ export class EventDetailPage {
 
   showGallery(index) {
     index = index || 0;
-    let images = [];
-    for (let image of this.images) {
-      images.push(image);
-    }
     let gallery = this.modalCtrl.create(GalleryPage, {
-      images: images,
+      images: this.images,
       start: index
     });
     gallery.present();

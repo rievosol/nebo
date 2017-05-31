@@ -47,6 +47,7 @@ import { Util } from '../providers/util';
 import { GeolocationService } from '../providers/geolocation-service';
 import { CameraService } from '../providers/camera-service';
 import { GoogleMaps } from '../providers/google-maps';
+import { PushService } from '../providers/push-service';
 
 import { NeboLoadingSpinner } from '../components/nebo-loading-spinner/nebo-loading-spinner';
 import { NeboSearch } from '../components/nebo-search/nebo-search';
@@ -57,6 +58,8 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { FilePath } from '@ionic-native/file-path';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { Push } from '@ionic-native/push';
 
 let pages = [
   MyApp,
@@ -113,6 +116,7 @@ export function providers() {
     Util,
     GeolocationService,
     CameraService,
+    PushService,
     GoogleMaps,
     StatusBar,
     SplashScreen,
@@ -120,6 +124,8 @@ export function providers() {
     Camera,
     File,
     FilePath,
+    Diagnostic,
+    Push,
     { provide: RequestOptions, useClass: DefaultRequestOptions },
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]

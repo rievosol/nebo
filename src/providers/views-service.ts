@@ -26,8 +26,8 @@ export class ViewsService {
         promotion: base + '/highlights-promotion.json'
       },
       browse: {
-        business: base + '/testing-business-listing.json', // testing
-        organization: base + '/testing-organization-listing.json'
+        business: base + '/nebo-business-listing.json',
+        organization: base + '/nebo-organization-listing.json'
       },
       favorites: {
         business: base + '/favorites-business.json',
@@ -42,7 +42,7 @@ export class ViewsService {
       },
       search: {
         autocomplete: base + '/nebo-autocomplete.json',
-        nearby: base + '/search-nearby.json'
+        nearby: base + '/nebo-search-nearby.json'
       },
       node: {
         children: base + '/entity-child-nodes.json'

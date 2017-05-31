@@ -67,7 +67,7 @@
           <ion-item-divider color="primary">NEW ANNOUNCEMENTS</ion-item-divider>
           <button ion-item *ngFor="let item of announcements.nodes" (click)="itemSelected(item)">
             <ion-thumbnail item-left>
-              <img src="{{ item.image }}">
+              <img src="{{ item.image.src }}">
             </ion-thumbnail>
             <h2>{{ item.title }}</h2>
             <p>{{ item.group }}</p>
@@ -83,7 +83,7 @@
           <ion-item-divider color="primary">UPCOMING EVENTS</ion-item-divider>
           <button ion-item class="my-item" *ngFor="let item of events.nodes" (click)="itemSelected(item)">
             <ion-thumbnail item-left>
-              <img src="{{ item.image }}">
+              <img src="{{ item.image.src }}">
             </ion-thumbnail>
             <h2>{{ item.title }}</h2>
             <p>{{ item.group }}</p>
