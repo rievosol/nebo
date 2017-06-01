@@ -7,6 +7,9 @@ import { CameraService } from '../../providers/camera-service';
 import { Neerby } from '../../providers/neerby';
 import { GoogleMaps } from '../../providers/google-maps';
 import { ModalGeolocation } from '../modal-geolocation/modal-geolocation';
+import { ModalManageImages } from '../modal-manage-images/modal-manage-images';
+import { GalleryPage } from '../gallery/gallery';
+import { Observable } from 'rxjs/Observable';
 
 declare var google: any;
 
@@ -30,11 +33,11 @@ export class EventEditFormPage {
 
   private nid: number;
   private form: FormGroup;
-  public state: string;
-  public action: string;
-  public buttonText: string;
-  public pageTitle: string;
-  public groupOptions: any[];
+  public state: string = 'loading';
+  public action: string = 'create';
+  public buttonText: string = 'Create';
+  public pageTitle: string = 'Create New ' + this.typeText;
+  public groupOptions: any[] = [];
   viewPath: string = 'og.audienceOptions';
   position: any = null;
   originalPosition: any = null;
@@ -45,7 +48,7 @@ export class EventEditFormPage {
   newLocationIsSet: boolean = false;
   addLocationBtn: string = 'Add location';
   addPicturesBtn: string = 'Add pictures';
-  minDate: any;
+  minStartDate: any;
   minFinishDate: any;
 
   constructor(public navCtrl: NavController, 
@@ -60,7 +63,7 @@ export class EventEditFormPage {
               private zone: NgZone) {
 
     let tomorrow = this.getMinDate();
-    this.minFinishDate = this.minDate = tomorrow.substr(0, 10);
+    this.minFinishDate = this.minStartDate = tomorrow.substr(0, 10);
     this.form = fb.group({
       title: ['', Validators.required],
       body: ['', Validators.required],
@@ -72,74 +75,57 @@ export class EventEditFormPage {
       longitude: [''],
       publishPeriod: ['']
     });
-    this.groupOptions = [];
-    this.state = 'loading';
     this.nid = this.navParams.get('nid');
-    this.action = 'create';
-    this.buttonText = 'Create';
-    this.pageTitle = 'Create New ' + this.typeText;
-  }
-
-  ionViewDidLoad() {
-    let stream = this.views.getView(this.viewPath)
-      .map(res => {
-        this.groupOptions = res.nodes;
-      });
-
     if (this.nid) {
       this.action = 'update';
       this.buttonText = 'Update';
       this.pageTitle = 'Update ' + this.typeText;
-      stream.flatMap(() => {
-        return this.nodeService.load(this.nid)
-          .map(node => {
-            this.form.controls['title'].setValue(node.title);
-            
-            let body = node.body.und ? node.body.und[0].value : '';
-            this.form.controls['body'].setValue(body);
+    }
+  }
 
-            let group = node.og_group_ref.und ? node.og_group_ref.und[0].target_id : '';
-            this.form.controls['group'].setValue(group);
+  ionViewDidLoad() {
+    this.views.getView(this.viewPath)
+      .flatMap(res => {
+        this.groupOptions = res.nodes;
+        if (this.nid) {
+          return this.nodeService.load(this.nid)
+            .map(node => {
+              this.form.controls['title'].setValue(node.title);
+              let body = node.body.und ? node.body.und[0].value : '';
+              this.form.controls['body'].setValue(body);
+              let group = node.og_group_ref.und ? node.og_group_ref.und[0].target_id : '';
+              this.form.controls['group'].setValue(group);
+              let phone = node.field_phone.und ? node.field_phone.und[0].value : '';
+              this.form.controls['phone'].setValue(phone);
 
-            let start = node.field_date.und ? this.toLocalIso(node.field_date.und[0].value) : '';
-            this.minDate = this.minFinishDate = start.substr(0, 10);
-            let finish = '';
-            if (node.field_date.und && node.field_date.und[0].value2) {
-              finish = this.toLocalIso(node.field_date.und[0].value2);
-            }
-            this.form.controls['start'].setValue(start);
-            this.form.controls['finish'].setValue(finish);
-            
-            let phone = node.field_phone.und ? node.field_phone.und[0].value : '';
-            this.form.controls['phone'].setValue(phone);
-            
-            if (node.field_position.und) {
-              this.position = node.field_position.und[0];
-              this.position.latitude = this.position.lat;
-              this.position.longitude = this.position.lon;
-              this.addLocationBtn = 'Modify';
-              this.originalPosition = this.position;
-            }
+              let start = node.field_date.und ? this.toLocalIso(node.field_date.und[0].value) : '';
+              this.minStartDate = this.minFinishDate = start.substr(0, 10);
+              let finish = node.field_date.und && node.field_date.und[0].value2 ? this.toLocalIso(node.field_date.und[0].value2) : '';
+              this.form.controls['start'].setValue(start);
+              this.form.controls['finish'].setValue(finish);
 
-            this.images = node.field_image.und ? node.field_image.und : [];
-            if (this.images.length > 0) {
-              this.addPicturesBtn = 'Modify';
-            }
-          });
+              if (node.field_position.und) {
+                this.position = node.field_position.und[0];
+                this.position.latitude = this.position.lat;
+                this.position.longitude = this.position.lon;
+                this.addLocationBtn = 'Modify';
+                this.originalPosition = this.position;
+              }
+
+              if (node.field_image.und && node.field_image.und.length > 0) {
+                this.addPicturesBtn = 'Modify';
+              }
+            });
+        }
+        else {
+          return Observable.of(null);
+        }
       })
       .subscribe(() => {
         this.state = 'loaded';
         this.content.resize();
         this.previewLocation();
       });
-    }
-    else {
-      stream.subscribe(() => {
-        this.state = 'loaded';
-        this.content.resize();
-      });
-    }
-
   }
 
   save() {
@@ -307,10 +293,35 @@ export class EventEditFormPage {
   }
 
   getPictureMethod() {
-    this.cameraService.takePicture().subscribe(file => {
-      file['unsaved'] = true;
-      this.images.push(file);
+    if (this.images.length) {
+      let modal = this.modalCtrl.create(ModalManageImages, {
+        images: this.images
+      });
+      modal.onDidDismiss(sortedImages => {
+        if (sortedImages) {
+          this.images = sortedImages.images;
+          if (this.images.length == 0) {
+            this.addPicturesBtn = 'Add Pictures';
+          }
+        }
+      });
+      modal.present();
+    }
+    else {
+      this.cameraService.takePicture().subscribe(file => {
+        this.images.push(file);
+        this.addPicturesBtn = 'Modify';
+      });
+    }
+  }
+
+  showGallery(index) {
+    index = index || 0;
+    let gallery = this.modalCtrl.create(GalleryPage, {
+      images: this.images,
+      start: index
     });
+    gallery.present();
   }
 
 }

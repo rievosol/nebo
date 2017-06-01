@@ -25,6 +25,7 @@
       <ion-item>
         <ion-label>Group</ion-label>
         <ion-select formControlName="group">
+          <ion-option value="''">- Please select -</ion-option>
           <ion-option *ngFor="let option of groupOptions" value="{{ option.nid }}">{{ option.title }}</ion-option>
         </ion-select>
       </ion-item>
@@ -34,6 +35,29 @@
           <ion-option *ngFor="let option of neerby.periodOptionsWD" value="{{ option.period }}">{{ option.label }}</ion-option>
         </ion-select>
       </ion-item>
+      <div padding>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label fixed>Pictures</ion-label>
+            </ion-col>
+            <ion-col text-right>
+              <button ion-button (click)="getPictureMethod()">{{ addPicturesBtn }}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <div class="gallery" *ngIf="images.length">
+          <ion-list>
+            <ion-item class="scrollable">
+              <ion-thumbnail item-left *ngFor="let image of images; let i = index">
+                <a (click)="showGallery(i)">
+                  <img src="{{ image.url }}">
+                </a>
+              </ion-thumbnail>
+            </ion-item>
+          </ion-list>
+        </div>
+      </div>
     </form>
   </div>
 </ion-content>

@@ -33,7 +33,7 @@
                 {{ category }}
                 <br/>
                 <ion-icon name="pin" item-left></ion-icon>
-                1.5km from here
+                {{ distance }}
               </div>
             </ion-item>
           </ion-col>
@@ -53,6 +53,15 @@
               <div>
                 <ion-icon name="heart"></ion-icon>
                 <div class="action-text">{{ favoriteText }}</div>
+              </div>
+            </button>
+          </ion-col>
+          <!-- Recommend -->
+          <ion-col>
+            <button ion-button icon-only large clear [color]="recommendColor" (click)="recommend()">
+              <div>
+                <ion-icon name="thumbs-up"></ion-icon>
+                <div class="action-text">{{ recommendText }}</div>
               </div>
             </button>
           </ion-col>
@@ -100,7 +109,7 @@
         <ion-item-divider color="primary">ANNOUNCEMENTS</ion-item-divider>
         <button ion-item *ngFor="let item of childNodes.announcement" (click)="viewChildNode(item)">
           <ion-thumbnail item-left>
-            <img src="{{ item.image }}">
+            <img src="{{ item.image.src }}">
           </ion-thumbnail>
           <h2>{{ item.title }}</h2>
           <p>{{ item.content }}</p>
@@ -113,7 +122,7 @@
         <ion-item-divider color="primary">UPCOMING EVENTS</ion-item-divider>
         <button ion-item *ngFor="let item of childNodes.event" (click)="viewChildNode(item)">
           <ion-thumbnail item-left>
-            <img src="{{ item.image }}">
+            <img src="{{ item.image.src }}">
           </ion-thumbnail>
           <h2>{{ item.title }}</h2>
           <p>{{ item.content }}</p>

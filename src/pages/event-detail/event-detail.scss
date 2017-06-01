@@ -1,5 +1,10 @@
 page-event-detail {
+  ion-content {
+    background-color: #e5e5e5 !important;
+  }
+
   .profile {
+    background-color: #fff;
     ion-icon {
       margin: 2px 5px 2px 0;
     }
@@ -63,7 +68,22 @@ page-event-detail {
     }
   }
 
+  .gallery, .about {
+    margin-top: 16px;
+  }
+
+  .gallery {
+    .scrollable {
+      width: auto;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
+  }
+
   .body {
+    background-color: #fff;
+
     p {
       white-space: pre-line;
     }
